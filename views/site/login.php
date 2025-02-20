@@ -1,54 +1,68 @@
 <?php
 
-/** @var yii\web\View $this */
-/** @var yii\bootstrap5\ActiveForm $form */
 
-/** @var app\models\LoginForm $model */
-
+use app\assets\MainAsset;
+use app\models\LoginForm;
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
+use yii\helpers\Url;
 
-$this->title = 'Login';
-$this->params['breadcrumbs'][] = $this->title;
+/**
+ * @var yii\web\View $this
+ * @var string $content
+ * @var LoginForm $model
+ * @var ActiveForm $form
+ */
+
+$themeMazer = MainAsset::register($this);
 ?>
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login:</p>
+<div class="row h-100">
+    <div class="col-lg-5 col-12">
+        <div id="auth-left">
+            <div class="auth-logo">
+                <a href="<?= Url::current() ?>">
+                    <img src="<?= "{$themeMazer->baseUrl}/static/images/logo/aspm4p-logo.png" ?>" alt="Logo" />
+                </a>
+            </div>
+            <h1 class="auth-title">Accesso</h1>
+            <p class="auth-subtitle mb-5">Fai login per accedere all'applicazione</p>
 
-    <div class="row">
-        <div class="col-lg-5">
-
-            <?php $form = ActiveForm::begin([
-                'id' => 'login-form',
-                'fieldConfig' => [
-                    'template' => "{label}\n{input}\n{error}",
-                    'labelOptions' => ['class' => 'col-lg-1 col-form-label mr-lg-3'],
-                    'inputOptions' => ['class' => 'col-lg-3 form-control'],
-                    'errorOptions' => ['class' => 'col-lg-7 invalid-feedback'],
-                ],
-            ]); ?>
-
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
-
-            <?= $form->field($model, 'password')->passwordInput() ?>
-
-            <?= $form->field($model, 'rememberMe')->checkbox([
-                'template' => "<div class=\"custom-control custom-checkbox\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
-            ]) ?>
-
-            <div class="form-group">
-                <div>
-                    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+            <?php $form = ActiveForm::begin() ?>
+            <div class="form-group position-relative has-icon-left mb-4">
+                <div class="form-control-icon">
+                    <i class="bi bi-person"></i>
                 </div>
+                <?= $form->field($model, 'username')->textInput(['class' => "form-control form-control-xl", 'placeholder' => "Username"])->label(false) ?>
             </div>
-
-            <?php ActiveForm::end(); ?>
-
-            <div style="color:#999;">
-                You may login with <strong>admin/admin</strong> or <strong>demo/demo</strong>.<br>
-                To modify the username/password, please check out the code <code>app\models\User::$users</code>.
+            <div class="form-group position-relative has-icon-left mb-4">
+                <div class="form-control-icon">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <?= $form->field($model, 'password')->passwordInput(['class' => "form-control form-control-xl", 'placeholder' => "Password"])->label(false) ?>
             </div>
+            <div class="form-check form-check-lg d-flex align-items-end">
+                <?= $form->field($model, 'rememberMe')->checkbox(['class' => "form-check-input me-2", 'value' => 1, 'uncheck' => null])->label("Ricordami") ?>
+            </div>
+            <?= Html::submitButton('Accedi', ['class' => 'btn btn-primary btn-block btn-lg shadow-lg mt-5']) ?>
+            <?php ActiveForm::end() ?>
+            <div class="text-center mt-5 text-lg fs-4">
+                <!--<p class="text-gray-600">
+                    Don't have an account?
+                    <a href="<?php /*= Url::toRoute(['signup']) */?>" class="font-bold">
+                        Registrati
+                    </a>.
+                </p>-->
+                <p>
+                    <a class="font-bold" href="<?= Url::toRoute(['forgot-password']) ?>">
+                        Password Dimenticata
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7 d-none d-lg-block">
+        <div id="auth-right">
 
         </div>
     </div>
