@@ -52,14 +52,27 @@ $themeMazer = MainAsset::register($this);
         </div>
         <div class="sidebar-menu">
             <ul class="menu">
-                <li class="sidebar-title">Menu</li>
-
                 <li
-                    class="sidebar-item active ">
+                        class="sidebar-item active ">
                     <a href="<?= Url::toRoute(['index']) ?>" class='sidebar-link'>
                         <i class="bi bi-grid-fill"></i>
                         <span>Dashboard</span>
                     </a>
+                </li>
+
+                <li class="sidebar-item has-sub">
+                    <a href="#" class='sidebar-link'>
+                        <i class="bi bi-people-fill"></i>
+                        <span>MMG-PLS</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="<?= Url::toRoute(['site/mmg-pls-mappa']) ?>">Mappa</a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="<?= Url::toRoute(['site/mmg-pls-indirizzi']) ?>">Indirizzi</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>

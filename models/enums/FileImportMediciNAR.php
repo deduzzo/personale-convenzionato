@@ -52,6 +52,8 @@ class FileImportMediciNAR extends BaseEnum
         self::STATO => 'Stato',
         self::CATEGORIA_MMG => self::MMG_ID,
         self::CATEGORIA_PLS => self::PLS_ID,
+        self::MMG_ID => self::MMG_ID,
+        self::PLS_ID => self::PLS_ID,
         self::CARATTERISTICA_COD_REG => self::COD_REG_ID,
         self::CARATTERISTICA_MASSIMALE => self::MASSIMALE_ID,
     ];

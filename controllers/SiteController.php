@@ -9,6 +9,7 @@ use app\models\enums\FileImportMediciNAR;
 use app\models\Indirizzi;
 use app\models\Rapporti;
 use app\models\RapportiCaratteristiche;
+use app\models\RapportiTipologia;
 use Carbon\Carbon;
 use yii\helpers\Json;
 use Yii;
@@ -231,12 +232,16 @@ class SiteController extends Controller
         }
     }
 
+    public function actionMmgPlsIndirizzi() {
+
+    }
+
     /**
      * Displays map page with districts.
      *
      * @return string
      */
-    public function actionMappa()
+    public function actionMmgPlsMappa()
     {
         // Define colors for districts
         $colors = [
@@ -330,8 +335,26 @@ class SiteController extends Controller
             $mediciJson = Json::encode($medici, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         }
         else {
-            $
-            $mediciJson = '[]';
+            $mediciJson = [];
+            $allMedici = Rapporti::find()->where(['id_tipologia' => FileImportMediciNAR::MMG_ID])
+            ->andWhere(['fine' => null])->all();
+            foreach ($allMedici as $rapporto) {
+                /* @var $rapporto Rapporti */
+                $codReg = RapportiCaratteristiche::find()->where(['id_rapporto' => $rapporto->id, 'id_caratteristica' => FileImportMediciNAR::COD_REG_ID])->one();
+                $indirizzoPrimario = Indirizzi::find()->where(['id_rapporto' => $rapporto->id, 'primario' => true])->one();
+                if ($indirizzoPrimario)
+                    $mediciJson[] = [
+                        'id_rapporto' => $rapporto->id,
+                        'cod_reg' => $codReg->valore,
+                        'nome_cognome' => $rapporto->cf0->nominativo,
+                        'indirizzo' => $indirizzoPrimario->indirizzo,
+                        'lat' => $indirizzoPrimario->lat,
+                        'lng' => $indirizzoPrimario->long,
+                        'tipo' => FileImportMediciNAR::getLabel($rapporto->id_tipologia),
+                        'circoscrizione' => null
+                    ];
+            }
+            $mediciJson = Json::encode($mediciJson, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         }
         return $this->render('mappa', [
             'geojsonString' => $geojsonString,

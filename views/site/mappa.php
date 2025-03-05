@@ -19,174 +19,205 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 </div>
 
 <!-- Carica l'API di Google Maps prima dello script -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<?= $_ENV['GOOGLE_MAPS_API_KEY'] ?>"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= $_ENV['GOOGLE_MAPS_API_KEY'] ?>&libraries=geometry"></script>
 
 <script>
-// Variabili globali
-let map;
-let geocoder;
-let markers = [];
-let polygons = [];
-let mediciPerCircoscrizione = {
-    '1': [],
-    '2': [],
-    '3': [],
-    '4': [],
-    '5': [],
-    '6': []
-};
+    // Variabili globali
+    let map;
+    let geocoder;
+    let markers = [];
+    let polygons = [];
+    let mediciPerCircoscrizione = {
+        '1': [],
+        '2': [],
+        '3': [],
+        '4': [],
+        '5': [],
+        '6': [],
+        'ALTRO': []
+    };
 
-// Funzione di inizializzazione della mappa
-function initializeMap() {
-    // Coordinate approssimative di Messina
-    const messina = { lat: 38.19394, lng: 15.55256 };
+    // Funzione di inizializzazione della mappa
+    function initializeMap() {
+        // Coordinate approssimative di Messina
+        const messina = {lat: 38.19394, lng: 15.55256};
+        console.log("caasdas");
 
-    // Crea la mappa
-    map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 12,
-        center: messina,
-        mapTypeId: 'terrain'
-    });
-
-    // Inizializza il geocoder
-    geocoder = new google.maps.Geocoder();
-
-    // Converti il GeoJSON in oggetto JavaScript
-    const geojsonData = <?= isset($geojsonString) ? $geojsonString : '{"type": "FeatureCollection", "features": []}' ?>;
-
-    // Array di colori predefiniti se non forniti dal server
-    const defaultColors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080', '#008080'];
-    const colors = <?= isset($colors) ? json_encode($colors) : 'defaultColors' ?>;
-
-    // Per ogni feature nel GeoJSON
-    geojsonData.features.forEach((feature, index) => {
-        // Crea il poligono della circoscrizione
-        const paths = feature.geometry.coordinates[0][0].map(coord => ({
-            lat: coord[1],
-            lng: coord[0]
-        }));
-
-        // Crea il poligono con il colore corrispondente
-        const polygon = new google.maps.Polygon({
-            paths: paths,
-            strokeColor: colors[0],
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: colors[index % colors.length],
-            fillOpacity: 0.35,
-            map: map
+        // Crea la mappa
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 12,
+            center: messina,
+            mapTypeId: 'terrain'
         });
 
-        polygons.push(polygon);
+        // Inizializza il geocoder
+        geocoder = new google.maps.Geocoder();
 
-        // Calcola il centro del poligono per posizionare l'etichetta
-        const bounds = new google.maps.LatLngBounds();
-        paths.forEach(path => bounds.extend(path));
-        const center = bounds.getCenter();
+        // Converti il GeoJSON in oggetto JavaScript
+        const geojsonData = <?= isset($geojsonString) ? $geojsonString : '{"type": "FeatureCollection", "features": []}' ?>;
 
-        // Crea l'etichetta con il nome della circoscrizione
-        new google.maps.Marker({
-            position: center,
-            map: map,
-            label: {
-                text: feature.properties.LAYER,
-                color: '#000000',
-                fontSize: '16px',
-                fontWeight: 'bold'
-            },
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 0
-            }
-        });
+        // Array di colori predefiniti se non forniti dal server
+        const defaultColors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080', '#008080'];
+        const colors = <?= isset($colors) ? json_encode($colors) : 'defaultColors' ?>;
 
-        // Eventi per il poligono
-        polygon.addListener('mouseover', () => {
-            polygon.setOptions({
-                fillOpacity: 0.6,
-                strokeWeight: 3
-            });
-        });
+        // Per ogni feature nel GeoJSON
+        geojsonData.features.forEach((feature, index) => {
+            // Crea il poligono della circoscrizione
+            const paths = feature.geometry.coordinates[0][0].map(coord => ({
+                lat: coord[1],
+                lng: coord[0]
+            }));
 
-        polygon.addListener('mouseout', () => {
-            polygon.setOptions({
+            // Crea il poligono con il colore corrispondente
+            const polygon = new google.maps.Polygon({
+                paths: paths,
+                strokeColor: colors[0],
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: colors[index % colors.length],
                 fillOpacity: 0.35,
-                strokeWeight: 2
+                map: map
+            });
+
+            polygons.push(polygon);
+
+            // Calcola il centro del poligono per posizionare l'etichetta
+            const bounds = new google.maps.LatLngBounds();
+            paths.forEach(path => bounds.extend(path));
+            const center = bounds.getCenter();
+
+            // Crea l'etichetta con il nome della circoscrizione
+            new google.maps.Marker({
+                position: center,
+                map: map,
+                label: {
+                    text: feature.properties.LAYER,
+                    color: '#000000',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                },
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 0
+                }
+            });
+
+            // Eventi per il poligono
+            polygon.addListener('mouseover', () => {
+                polygon.setOptions({
+                    fillOpacity: 0.6,
+                    strokeWeight: 3
+                });
+            });
+
+            polygon.addListener('mouseout', () => {
+                polygon.setOptions({
+                    fillOpacity: 0.35,
+                    strokeWeight: 2
+                });
             });
         });
-    });
 
-    // Geocodifica gli indirizzi dei medici
-    const mediciData = <?= $mediciJson ?>;
-    processMedici(mediciData);
-}
-
-// Funzione per processare i medici in modo asincrono
-async function processMedici(medici) {
-    for (const medico of medici) {
-        await geocodeAddress(medico);
-        // Piccola pausa per evitare di sovraccaricare l'API
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Geocodifica gli indirizzi dei medici
+        const mediciData = <?= $mediciJson ?>;
+        processMedici(mediciData);
     }
-}
 
-// Funzione per geocodificare un singolo indirizzo
-function geocodeAddress(medico) {
-    return new Promise((resolve) => {
-        geocoder.geocode({ address: medico.indirizzo }, (results, status) => {
-            if (status === 'OK') {
-                const marker = new google.maps.Marker({
-                    map: map,
-                    position: results[0].geometry.location,
-                    title: `[${medico.cod_reg}] ${medico.nome_cognome} [${medico.circoscrizione}]`
-                });
+    // Funzione per processare i medici in modo asincrono
+    async function processMedici(medici) {
+        for (const medico of medici) {
+            if (!medico.lat && !medico.lng) {
+                await geocodeAddress(medico);
+                // Piccola pausa per evitare di sovraccaricare l'API
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            else
+                addPinMedico(medico);
 
-                // post location to action to save in db
-                $.post('<?= Yii::$app->urlManager->createUrl(['site/save-location']) ?>', {
-                    id_rapporto: medico.id_rapporto,
-                    cod_reg: medico.cod_reg,
-                    lat: results[0].geometry.location.lat(),
-                    lng: results[0].geometry.location.lng()
-                });
+        }
+    }
 
-                // Aggiungi info window
-                const infowindow = new google.maps.InfoWindow({
-                    content: `<div style="padding: 10px;">
+    function addPinMedico(medico) {
+        {
+            // create location from lat and lng
+            console.log("bau");
+            let location = new google.maps.LatLng(medico.lat, medico.lng);
+            const marker = new google.maps.Marker({
+                map: map,
+                position: location,
+                title: `[${medico.cod_reg}] ${medico.nome_cognome} [${medico.circoscrizione}]`
+            });
+
+            // Aggiungi info window
+            const infowindow = new google.maps.InfoWindow({
+                content: `<div style="padding: 10px;">
                         <strong>[${medico.cod_reg}] ${medico.nome_cognome}</strong><br>
                         ${medico.indirizzo}<br>
                         Circoscrizione: ${medico.circoscrizione}
                     </div>`
-                });
+            });
 
-                marker.addListener('click', () => {
-                    infowindow.open(map, marker);
-                });
+            marker.addListener('click', () => {
+                infowindow.open(map, marker);
+            });
 
-                markers.push(marker);
+            markers.push(marker);
 
-                // Aggiorna il conteggio per circoscrizione
-                if (medico.circoscrizione) {
-                    const circ = medico.circoscrizione.toString();
-                    if (!mediciPerCircoscrizione[circ]) {
-                        mediciPerCircoscrizione[circ] = [];
+            // Determina la circoscrizione in base alle coordinate
+            const getCircoscrizioneByCoordinates = (lat, lng) => {
+                const point = new google.maps.LatLng(lat, lng);
+
+                for (let i = 0; i < polygons.length; i++) {
+                    if (google.maps.geometry.poly.containsLocation(point, polygons[i])) {
+                        // I poligoni sono nello stesso ordine delle circoscrizioni (1-6)
+                        return (i + 1).toString();
                     }
-                    mediciPerCircoscrizione[circ].push(medico);
-                    updateReport();
                 }
+
+                // Se non è in nessuna circoscrizione
+                return 'ALTRO';
             }
-            resolve();
+
+            // Aggiorna il conteggio per circoscrizione
+            const circ = getCircoscrizioneByCoordinates(medico.lat, medico.lng);
+            if (!mediciPerCircoscrizione[circ]) {
+                mediciPerCircoscrizione[circ] = [];
+            }
+            mediciPerCircoscrizione[circ].push(medico);
+
+            updateReport();
+        }
+    }
+
+    // Funzione per geocodificare un singolo indirizzo
+    function geocodeAddress(medico) {
+        return new Promise((resolve) => {
+            geocoder.geocode({address: medico.indirizzo}, (results, status) => {
+                if (status === 'OK') {
+                    // post location to action to save in db
+                    $.post('<?= Yii::$app->urlManager->createUrl(['site/save-location']) ?>', {
+                        id_rapporto: medico.id_rapporto,
+                        cod_reg: medico.cod_reg,
+                        lat: results[0].geometry.location.lat(),
+                        lng: results[0].geometry.location.lng()
+                    });
+                    medico.lat = results[0].geometry.location.lat();
+                    medico.lng = results[0].geometry.location.lng();
+                    addPinMedico(medico)
+                }
+                resolve();
+            });
         });
-    });
-}
+    }
 
-// Funzione per aggiornare il report
-function updateReport() {
-    const reportDiv = document.getElementById('reportContent');
-    let html = '<div class="row">';
+    // Funzione per aggiornare il report
+    function updateReport() {
+        const reportDiv = document.getElementById('reportContent');
+        let html = '<div class="row">';
 
-    for (let circ in mediciPerCircoscrizione) {
-        if (mediciPerCircoscrizione[circ].length > 0) {
-            html += `
+        for (let circ in mediciPerCircoscrizione) {
+            if (mediciPerCircoscrizione[circ].length > 0) {
+                html += `
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-header">
@@ -196,23 +227,23 @@ function updateReport() {
                             <p>Totale medici: ${mediciPerCircoscrizione[circ].length}</p>
                             <ul>
                                 ${mediciPerCircoscrizione[circ].map(medico =>
-                                    `<li>[${medico.cod_reg}] ${medico.nome_cognome}</li>`
-                                ).join('')}
+                    `<li>[${medico.cod_reg}] ${medico.nome_cognome}</li>`
+                ).join('')}
                             </ul>
                         </div>
                     </div>
                 </div>`;
+            }
         }
+
+        html += '</div>';
+        reportDiv.innerHTML = html;
     }
 
-    html += '</div>';
-    reportDiv.innerHTML = html;
-}
-
-// Inizializza la mappa quando il documento è pronto
-document.addEventListener('DOMContentLoaded', function() {
-    initializeMap();
-});
+    // Inizializza la mappa quando il documento è pronto
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeMap();
+    });
 </script>
 
 <!-- Aggiungi Bootstrap per il layout del report -->
