@@ -10,6 +10,37 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 <div class="site-mappa">
     <h1><?= $this->title ?></h1>
 
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Filtri</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="filtroAmbiti">Ambito:</label>
+                        <select id="filtroAmbiti" class="form-select" multiple>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="filtroTipo">Tipo Rapporto:</label>
+                        <select id="filtroTipo" class="form-select">
+                            <option value="">Tutti</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button id="applicaFiltri" class="btn btn-primary">Applica Filtri</button>
+                <button id="resetFiltri" class="btn btn-secondary ms-2">Reset</button>
+            </div>
+        </div>
+    </div>
+
     <div id="map" style="height: 800px; width: 100%; margin-bottom: 20px;"></div>
 
     <div id="report" class="mt-4">
@@ -27,6 +58,9 @@ $this->title = 'Mappa Circoscrizioni e Medici';
     let geocoder;
     let markers = [];
     let polygons = [];
+    let allMedici = [];
+    let tipiRapporto = new Set();
+    let ambiti = new Set();
     let mediciPerCircoscrizione = {
         '1': [],
         '2': [],
@@ -41,7 +75,6 @@ $this->title = 'Mappa Circoscrizioni e Medici';
     function initializeMap() {
         // Coordinate approssimative di Messina
         const messina = {lat: 38.19394, lng: 15.55256};
-        console.log("caasdas");
 
         // Crea la mappa
         map = new google.maps.Map(document.getElementById("map"), {
@@ -120,7 +153,94 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 
         // Geocodifica gli indirizzi dei medici
         const mediciData = <?= $mediciJson ?>;
+        allMedici = mediciData; // Salva tutti i medici per applicare i filtri dopo
         processMedici(mediciData);
+        populateFilters(mediciData);
+
+        // Aggiungi listener ai pulsanti di filtro
+        document.getElementById('applicaFiltri').addEventListener('click', applicaFiltri);
+        document.getElementById('resetFiltri').addEventListener('click', resetFiltri);
+    }
+
+    // Popola i filtri con i valori disponibili
+    function populateFilters(medici) {
+        const ambitiSelect = document.getElementById('filtroAmbiti');
+        const tipiSelect = document.getElementById('filtroTipo');
+
+        // Raccogli tutti i valori unici di ambito e tipo
+        medici.forEach(medico => {
+            if (medico.ambito) {
+                ambiti.add(medico.ambito);
+            }
+            if (medico.tipo) {
+                tipiRapporto.add(medico.tipo);
+            }
+        });
+
+        // Popola il multiselect degli ambiti
+        ambiti.forEach(ambito => {
+            const option = document.createElement('option');
+            option.value = ambito;
+            option.textContent = ambito;
+            ambitiSelect.appendChild(option);
+        });
+
+        // Popola il select dei tipi
+        tipiRapporto.forEach(tipo => {
+            const option = document.createElement('option');
+            option.value = tipo;
+            option.textContent = tipo;
+            tipiSelect.appendChild(option);
+        });
+    }
+
+    // Applica i filtri selezionati
+    function applicaFiltri() {
+        clearMarkers();
+        resetMediciPerCircoscrizione();
+
+        const ambitiSelezionati = Array.from(document.getElementById('filtroAmbiti').selectedOptions).map(opt => opt.value);
+        const tipoSelezionato = document.getElementById('filtroTipo').value;
+
+        const mediciFiltrati = allMedici.filter(medico => {
+            let matchAmbito = true;
+            let matchTipo = true;
+
+            if (ambitiSelezionati.length > 0) {
+                matchAmbito = medico.ambito && ambitiSelezionati.includes(medico.ambito);
+            }
+
+            if (tipoSelezionato) {
+                matchTipo = medico.tipo === tipoSelezionato;
+            }
+
+            return matchAmbito && matchTipo;
+        });
+
+        processMedici(mediciFiltrati);
+    }
+
+    // Reset dei filtri
+    function resetFiltri() {
+        document.getElementById('filtroAmbiti').selectedIndex = -1;
+        document.getElementById('filtroTipo').selectedIndex = 0;
+
+        clearMarkers();
+        resetMediciPerCircoscrizione();
+        processMedici(allMedici);
+    }
+
+    // Pulisci tutti i marker dalla mappa
+    function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+    }
+
+    // Reset del conteggio medici per circoscrizione
+    function resetMediciPerCircoscrizione() {
+        for (let circ in mediciPerCircoscrizione) {
+            mediciPerCircoscrizione[circ] = [];
+        }
     }
 
     // Funzione per processare i medici in modo asincrono
@@ -133,14 +253,13 @@ $this->title = 'Mappa Circoscrizioni e Medici';
             }
             else
                 addPinMedico(medico);
-
         }
+        updateReport();
     }
 
     function addPinMedico(medico) {
         {
             // create location from lat and lng
-            console.log("bau");
             let location = new google.maps.LatLng(medico.lat, medico.lng);
             const marker = new google.maps.Marker({
                 map: map,
@@ -154,6 +273,8 @@ $this->title = 'Mappa Circoscrizioni e Medici';
                         <strong>[${medico.cod_reg}] ${medico.nome_cognome}</strong><br>
                         ${medico.indirizzo}<br>
                         Circoscrizione: ${medico.circoscrizione}
+                        ${medico.ambito ? '<br>Ambito: ' + medico.ambito : ''}
+                        <br>Tipo: ${medico.tipo || 'N/D'}
                     </div>`
             });
 
@@ -184,8 +305,6 @@ $this->title = 'Mappa Circoscrizioni e Medici';
                 mediciPerCircoscrizione[circ] = [];
             }
             mediciPerCircoscrizione[circ].push(medico);
-
-            updateReport();
         }
     }
 
@@ -227,7 +346,7 @@ $this->title = 'Mappa Circoscrizioni e Medici';
                             <p>Totale medici: ${mediciPerCircoscrizione[circ].length}</p>
                             <ul>
                                 ${mediciPerCircoscrizione[circ].map(medico =>
-                    `<li>[${medico.cod_reg}] ${medico.nome_cognome}</li>`
+                    `<li>[${medico.cod_reg}] ${medico.nome_cognome} - ${medico.tipo || 'N/D'}</li>`
                 ).join('')}
                             </ul>
                         </div>
@@ -246,5 +365,13 @@ $this->title = 'Mappa Circoscrizioni e Medici';
     });
 </script>
 
-<!-- Aggiungi Bootstrap per il layout del report -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Aggiungi supporto per multiselect -->
+<style>
+    #filtroAmbiti option {
+        padding: 5px;
+    }
+    #filtroAmbiti {
+        height: auto;
+        min-height: 80px;
+    }
+</style>

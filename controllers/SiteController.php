@@ -233,6 +233,23 @@ class SiteController extends Controller
     }
 
     public function actionMmgPlsIndirizzi() {
+        $medici = Rapporti::find()->where(['id_tipologia' => FileImportMediciNAR::MMG_ID])
+            ->innerJoin('ambiti', 'rapporti.id_ambito = ambiti.id')->where(['like', 'ambiti.descrizione', 'messina'])
+            ->andWhere(['fine' => null])->all();
+        $allRapportiIds = [];
+        foreach ($medici as $rapporto) {
+            $allRapportiIds[] = $rapporto->id;
+        }
+        // elimina tutti gli id con indirizzo valido, resteranno quelli senza indirizzo
+        $indirizzi = Indirizzi::find()->where(['id_rapporto' => $allRapportiIds])->andWhere(['not', ['lat' => null]])->andWhere(['not', ['long' => null]])->all();
+        foreach ($indirizzi as $indirizzo) {
+            $key = array_search($indirizzo->id_rapporto, $allRapportiIds);
+            if ($key !== false) {
+                unset($allRapportiIds[$key]);
+            }
+        }
+        //all rapporti ids includes in allRapportiIds
+        $rapporti = Rapporti::find()->where(['id' => $allRapportiIds])->all();
 
     }
 
@@ -322,6 +339,7 @@ class SiteController extends Controller
                         'indirizzo' => $row[2],
                         'recapiti' => $row[3],
                         'tipo' => $row[4],
+                        'ambito' => isset($row[5]) ? $row[5] : null,
                         'circoscrizione' => null
                     ];
                 }
@@ -337,22 +355,31 @@ class SiteController extends Controller
         else {
             $mediciJson = [];
             $allMedici = Rapporti::find()->where(['id_tipologia' => FileImportMediciNAR::MMG_ID])
-            ->andWhere(['fine' => null])->all();
+                ->andWhere(['fine' => null])->all();
             foreach ($allMedici as $rapporto) {
                 /* @var $rapporto Rapporti */
                 $codReg = RapportiCaratteristiche::find()->where(['id_rapporto' => $rapporto->id, 'id_caratteristica' => FileImportMediciNAR::COD_REG_ID])->one();
                 $indirizzoPrimario = Indirizzi::find()->where(['id_rapporto' => $rapporto->id, 'primario' => true])->one();
-                if ($indirizzoPrimario)
+
+                // Ottieni l'ambito del medico
+                $ambitoObj = null;
+                if ($rapporto->id_ambito) {
+                    $ambitoObj = Ambiti::findOne($rapporto->id_ambito);
+                }
+
+                if ($indirizzoPrimario) {
                     $mediciJson[] = [
                         'id_rapporto' => $rapporto->id,
-                        'cod_reg' => $codReg->valore,
+                        'cod_reg' => $codReg ? $codReg->valore : '',
                         'nome_cognome' => $rapporto->cf0->nominativo,
                         'indirizzo' => $indirizzoPrimario->indirizzo,
                         'lat' => $indirizzoPrimario->lat,
                         'lng' => $indirizzoPrimario->long,
-                        'tipo' => FileImportMediciNAR::getLabel($rapporto->id_tipologia),
+                        'tipo' => RapportiTipologia::findOne($rapporto->id_tipologia)->descrizione,
+                        'ambito' => $ambitoObj ? $ambitoObj->descrizione : null,
                         'circoscrizione' => null
                     ];
+                }
             }
             $mediciJson = Json::encode($mediciJson, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         }
