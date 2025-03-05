@@ -2,11 +2,13 @@
 
 namespace app\controllers;
 
+use app\models\Indirizzi;
 use app\models\Rapporti;
 use app\models\RapportiSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * MmgPlsController implements the CRUD actions for Rapporti model.
@@ -114,6 +116,53 @@ class MmgPlsController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Manages addresses for Rapporti models.
+     * @return string|array
+     */
+    public function actionIndirizzi()
+    {
+        $rapporti = Rapporti::find()->where(['fine' => null])->all();
+
+        if ($this->request->isAjax) {
+            \Yii::$app->response->format = Response::FORMAT_JSON;
+            $data = json_decode($this->request->getRawBody(), true);
+            $id = $data['id'];
+            $lat = $data['lat'];
+            $lng = $data['lng'];
+
+            $model = $this->findModel($id);
+            $model->latitude = $lat;
+            $model->longitude = $lng;
+
+            if ($model->save()) {
+                return ['success' => true];
+            }
+            return ['success' => false, 'errors' => $model->errors];
+        }
+
+        return $this->render('indirizzi', [
+            'rapporti' => $rapporti,
+        ]);
+    }
+
+    /**
+     * Gets details for a specific Rapporti model via AJAX.
+     * @param int $id
+     * @return array
+     */
+    public function actionGetRapportoDetails($id)
+    {
+        \Yii::$app->response->format = Response::FORMAT_JSON;
+        $indirizzo = Indirizzi::find()->where(['id_rapporto' => $id,'primario' => true])->one();
+
+        return [
+            'indirizzo' => $indirizzo ? $indirizzo->indirizzo : null,
+            'latitude' => $indirizzo ? $indirizzo->lat : null,
+            'longitude' =>$indirizzo ? $indirizzo->long : null,
+        ];
     }
 
     /**
