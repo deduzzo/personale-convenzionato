@@ -2,6 +2,14 @@
 
 namespace app\controllers;
 
+use app\helpers\ExcelHelper;
+use app\models\Ambiti;
+use app\models\Anagrafica;
+use app\models\enums\FileImportMediciNAR;
+use app\models\Indirizzi;
+use app\models\Rapporti;
+use app\models\RapportiCaratteristiche;
+use Carbon\Carbon;
 use yii\helpers\Json;
 use Yii;
 use yii\filters\AccessControl;
@@ -63,6 +71,81 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    public function actionUpload()
+    {
+        $errors = [];
+        $path = Yii::getAlias('@app/config/data/2025-03-04.xlsx');
+        $data = ExcelHelper::getExcelData($path);
+        foreach ($data as $row) {
+            $medico = Anagrafica::find()->where(['cf' => $row[FileImportMediciNAR::COD_FISCALE]])->one();
+            if (!$medico) {
+                $medico = new Anagrafica();
+                $medico->cf = $row[FileImportMediciNAR::COD_FISCALE];
+                $medico->nominativo = $row[FileImportMediciNAR::NOMINATIVO];
+                $medico->save();
+                if ($medico->hasErrors()) {
+                    array_merge($medico->getErrors(), $errors);
+                }
+            }
+            $da = Carbon::createFromImmutable($row[FileImportMediciNAR::DATA_INIZIO_RAPPORTO])->format('Y-m-d');
+            $rapporto = Rapporti::find()->where([
+                'cf' => $medico->cf,
+                'inizio' => $da,
+                'id_tipologia' => FileImportMediciNAR::getLabel($row[FileImportMediciNAR::CATEGORIA])
+            ])->one();
+            if (!$rapporto) {
+                $rapporto = new Rapporti();
+                $rapporto->cf = $medico->cf;
+                $rapporto->inizio = $da;
+                $rapporto->id_tipologia = FileImportMediciNAR::getLabel($row[FileImportMediciNAR::CATEGORIA]);
+                $fine = $row[FileImportMediciNAR::DATA_FINE_RAPPORTO] ?
+                    Carbon::createFromImmutable($row[FileImportMediciNAR::DATA_FINE_RAPPORTO])->format('Y-m-d') : null;
+                $rapporto->fine = $fine;
+                $ambito = Ambiti::find()->where(['descrizione' => $row[FileImportMediciNAR::AMBITO]])->one();
+                if (!$ambito && $row[FileImportMediciNAR::AMBITO] !== "" && $row[FileImportMediciNAR::AMBITO] !== null) {
+                    $ambito = new Ambiti();
+                    $ambito->descrizione = $row[FileImportMediciNAR::AMBITO];
+                    $ambito->id_tipologia_applicabile = $rapporto->id_tipologia;
+                    $ambito->save();
+                    if ($ambito->hasErrors()) {
+                        array_merge($ambito->getErrors(), $errors);
+                    }
+                }
+                $rapporto->id_ambito = $ambito ? $ambito->id : null;
+                $rapporto->save();
+                if ($rapporto->hasErrors()) {
+                    array_merge($rapporto->getErrors(), $errors);
+                }
+            }
+            RapportiCaratteristiche::deleteAll(['id_rapporto' => $rapporto->id]);
+            $massimale = $row[FileImportMediciNAR::MASSIMALE];
+            if ($massimale) {
+                $caratteristica = new RapportiCaratteristiche();
+                $caratteristica->id_rapporto = $rapporto->id;
+                $caratteristica->id_caratteristica = FileImportMediciNAR::getLabel(FileImportMediciNAR::CARATTERISTICA_MASSIMALE);
+                $caratteristica->valore = strval($massimale);
+                $caratteristica->valido = true;
+                $caratteristica->save();
+                if ($caratteristica->hasErrors()) {
+                    array_merge($caratteristica->getErrors(), $errors);
+                }
+            }
+            $codReg = $row[FileImportMediciNAR::COD_REGIONALE];
+            if ($codReg) {
+                $caratteristica = new RapportiCaratteristiche();
+                $caratteristica->id_rapporto = $rapporto->id;
+                $caratteristica->id_caratteristica = FileImportMediciNAR::getLabel(FileImportMediciNAR::CARATTERISTICA_COD_REG);
+                $caratteristica->valore = strval($codReg);
+                $caratteristica->valido = true;
+                $caratteristica->save();
+                if ($caratteristica->hasErrors()) {
+                    array_merge($caratteristica->getErrors(), $errors);
+                }
+            }
+
+        }
     }
 
     /**
@@ -128,6 +211,26 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
+    public function actionSaveLocation() {
+        if (Yii::$app->request->isAjax || Yii::$app->request->isPost) {
+            $errors = [];
+            $data = Yii::$app->request->post();
+
+            $indirizzo = Indirizzi::find()->where(['id_rapporto' => $data['id_rapporto']])->one();
+            if ($indirizzo) {
+                $indirizzo->lat = $data['lat'];
+                $indirizzo->long = $data['lng'];
+                $indirizzo->save();
+                if ($indirizzo->hasErrors()) {
+                    array_merge($indirizzo->getErrors(), $errors);
+                }
+            }
+        }
+        if (!empty($errors)) {
+            return $this->asJson(['success' => false, 'errors' => $errors]);
+        }
+    }
+
     /**
      * Displays map page with districts.
      *
@@ -172,51 +275,64 @@ class SiteController extends Controller
             error_log('GeoJSON file not found: ' . $geojsonFilePath);
         }
 
-    // Leggi il file CSV dei medici
-        $csvFilePath = Yii::getAlias('@app/config/data/dati.csv');
-        $medici = [];
+        $build = false;
+        if ($build) {
+            // Leggi il file CSV dei medici
+            $csvFilePath = Yii::getAlias('@app/config/data/dati.csv');
+            $medici = [];
 
-        if (file_exists($csvFilePath)) {
-            $handle = fopen($csvFilePath, 'r');
+            Indirizzi::deleteAll();
 
-            // Salta l'intestazione
-            $headers = fgetcsv($handle, 0, '|');
+            if (file_exists($csvFilePath)) {
+                $handle = fopen($csvFilePath, 'r');
 
-            // Leggi tutte le righe
-            while (($row = fgetcsv($handle, 0, '|')) !== false) {
-                // Ignora righe vuote
-                if (count($row) < 6) continue;
+                // Salta l'intestazione
+                $headers = fgetcsv($handle, 0, '|');
 
-                // Controlla se l'ambito contiene un numero (circoscrizione)
-                $circoscrizione = preg_match('/^\d+$/', $row[5]) ? $row[5] : '';
+                // Leggi tutte le righe
+                while (($row = fgetcsv($handle, 0, '|')) !== false) {
+                    // Ignora righe vuote
+                    if (count($row) < 6) continue;
 
-                // Se non c'è l'informazione sulla circoscrizione, prova a estrarla dall'indirizzo
-                // o assegna Nord/Sud ad una circoscrizione
-                if (empty($circoscrizione)) {
-                    if ($row[5] == 'Nord') {
-                        $circoscrizione = '1'; // Esempio: Nord = Circoscrizione 1
-                    } elseif ($row[5] == 'Sud') {
-                        $circoscrizione = '2'; // Esempio: Sud = Circoscrizione 2
+                    $rapporto = Rapporti::find()->innerJoin('rapporti_caratteristiche', 'rapporti.id = rapporti_caratteristiche.id_rapporto')
+                        ->where(['rapporti_caratteristiche.id_caratteristica' => FileImportMediciNAR::getLabel(FileImportMediciNAR::CARATTERISTICA_COD_REG), 'rapporti_caratteristiche.valore' => $row[0]])->all();
+                    if (!$rapporto) {
+                        error_log('Rapporto non trovato con codice regionale: ' . $row[0]);
+                        continue;
+                    } else if (count($rapporto) > 0) {
+                        if (count($rapporto) > 1) {
+                            error_log('Trovati più rapporti con lo stesso codice regionale: ' . $row[0]);
+                        }
+                        $indirizzo = new Indirizzi();
+                        $indirizzo->id_rapporto = $rapporto[0]->id;
+                        $indirizzo->indirizzo = $row[2];
+
+                        $indirizzo->save();
                     }
+
+                    $medici[] = [
+                        'id_rapporto' => $rapporto[0]->id,
+                        'cod_reg' => $row[0],
+                        'nome_cognome' => $row[1],
+                        'indirizzo' => $row[2],
+                        'recapiti' => $row[3],
+                        'tipo' => $row[4],
+                        'circoscrizione' => null
+                    ];
                 }
 
-                $medici[] = [
-                    'cod_reg' => $row[0],
-                    'nome_cognome' => $row[1],
-                    'indirizzo' => $row[2],
-                    'recapiti' => $row[3],
-                    'tipo' => $row[4],
-                    'circoscrizione' => $circoscrizione
-                ];
+                fclose($handle);
+            } else {
+                error_log('File CSV medici non trovato: ' . $csvFilePath);
             }
 
-            fclose($handle);
-        } else {
-            error_log('File CSV medici non trovato: ' . $csvFilePath);
+            // Converti l'array in JSON
+            $mediciJson = Json::encode($medici, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         }
-
-        // Converti l'array in JSON
-        $mediciJson = Json::encode($medici, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+        else {
+            $
+            $mediciJson = '[]';
+        }
         return $this->render('mappa', [
             'geojsonString' => $geojsonString,
             'mediciJson' => $mediciJson,

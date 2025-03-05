@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=asp_personale_convenzionato',
+    'dsn' => 'mysql:host=localhost;dbname=asp_convenzionato',
     'username' => 'root',
     'password' => 'root',
     'charset' => 'utf8',

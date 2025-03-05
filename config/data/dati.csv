@@ -5,7 +5,7 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 315439|Aiello Nunziatina|Viale San Martino, isolato 37 n. 367 - Messina|335 8200951|Pediatra|Nord|
 315439|Aiello Nunziatina|Massa S. Giorgio - Via Traina n. 7 - Messina|335 8200951|Pediatra|Nord|
 302548|Alecci Umberto|Viale Boccetta, 149 - Messina|090 571019 - 330 965223*|Medico|3|
-331593|Alç Roberto|Via La Farina Is.59 Messina|090 2320325 - 347 4073346|Medico|3|
+331593|Al√¨ Roberto|Via La Farina Is.59 Messina|090 2320325 - 347 4073346|Medico|3|
 315393|Aliberti Annamaria Castadiva|||Pediatra|Nord|
 320494|Alvaro Andrea Giuseppe|Via Placida, 85 - Messina|090 57544 - 328 6662868|Medico|3|
 332859|Angelo Zodda|Via Roosevelt, isolato 21 int. 76 Messina|351 8591212|Medico|3|
@@ -15,9 +15,9 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 315417|Arena Graziella|||Pediatra|Nord|
 319706|Arena Nicola|Via Catania, 18 - sc. E - Messina|090 9433395 - 340 1022937|Medico|3|
 324269|Arimatea Salvatore|Via G. Pascoli, 21 - Messina|393 4274508 - 090 671175|Medico|3|
-319466|Armeli Antonella|Via Boner N¯ 22 is. 459 - Messina|090 364453 - 349 3553991|Medico|3|
+319466|Armeli Antonella|Via Boner N¬∞ 22 is. 459 - Messina|090 364453 - 349 3553991|Medico|3|
 322013|Arrigo Giovanni|Via Placida,85 - Messina|090 5731150 - 339 2615850|Medico|3|
-302878|AttinÖ Carmela|||Pediatra|Nord|
+302878|Attin√† Carmela|||Pediatra|Nord|
 331947|Bagnato Maria Luisa|Via Largo Bozzi n. 10 - Messina|349 5826709|Medico|3|
 331446|Ballato Melina|Via Umberto I, n. 358 - Nizza di Sicilia (ME)|347 5515659|Medico|2|
 316170|Bandiera Alessandro|Viale Giostra is. 499 - Messina|090343802 - 348 3844910|Medico|3|
@@ -34,7 +34,7 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 316933|Bonfiglio Carmela|Via Nazionale 149 - Gianpilieri Marina (ME)|090 810621|Medico|3|
 322843|Bonfiglio Giovanni|Via Nazionale, 146 - Santa Margherita (ME)|090 630605 - 333 5043512|Medico|3|
 314891|Bongiovanni Antonella|Via Comunale, 53 - Camaro Inferiore (ME)|090 671323 - 338 4129665|Medico|3|
-313648|Bonomo Edoardo|Via Pippo Romeo, is. 211 n¯28 - Messina|090 674656 - 3805031096|Medico|3|
+313648|Bonomo Edoardo|Via Pippo Romeo, is. 211 n¬∞28 - Messina|090 674656 - 3805031096|Medico|3|
 332610|Briguglio Giuseppe|Via Cristoforo Colombo, 73 - Roccalumera (ME)|349 0907027|Medico|1|
 315326|Bruno Antonina|Viale Bertuccio, snc Bordonaro - Messina|090 683055 - 3335331007|Pediatra|Nord|
 323528|Bruno Letteria|||Medico|3|
@@ -43,8 +43,7 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 320620|Calapistri Irene|Piazza Matteotti, 11 - Messina|090 359731 - 338 5037613|Medico|3|
 334138|Caldarera Alessio|Viale Regina Elena, 6|349 5044140|Messina|3|
 334138|Caldarera Alessio|Piazza Umberto I, 4|349 5044140|Messina|3|
-329129|Caliri Carmela|Via Pozzo Giudeo, 74 - Torre Faro (ME)|327 8737524|Medico|3|
-32912/9|Caliri Carmela|Pozzo Giudeo Torre Faro - Messina|090 325124 / 327 8737524|Medico|3|
+329129|Caliri Carmela|Via Pozzo Giudeo, 74 - Torre Faro (ME)|090 325124 / 327 87375244|Medico|3|
 303541|Calogero Francesco|Via Boner, 49 - Messina|090 345336 - 333 6216654|Medico|3|
 315075|Cambria Maria Sofia|Via Natoli, 36 - Messina|090 2935814|Pediatra|Nord|
 315201|Cambria Rosaria|||Pediatra|Nord|
@@ -54,9 +53,9 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 320585|Cammera Bruno|Via V. Bellini, 9 - Villafranca Tirrena (ME)|090-334694 -3476146726|Medico|4|
 332119|Cammuca Lucrezia|||Medico|3|
 319432|Campagna Sergio|Via Colapesce, 1 - Messina|090 51193 - 392 9159675|Medico|3|
-303597|Campisi Antonino|Piazza Duomo, is 308 n¯ 25 - Messina|090 710018 - 339 2852391|Medico|3|
+303597|Campisi Antonino|Piazza Duomo, is 308 n¬∞ 25 - Messina|090 710018 - 339 2852391|Medico|3|
 326771|Campisi Mariapaola|||Medico|3|
-321885|Caparra Assuntina|Via La Farina is R, n¯91 - Messina|090 6783295 - 347 8244906|Medico|3|
+321885|Caparra Assuntina|Via La Farina is R, n¬∞91 - Messina|090 6783295 - 347 8244906|Medico|3|
 316238|Capillo Angela|Via Manzoni, 2 - Messina|090 59163 - 339 2794870|Medico|3|
 334035|Capillo Diego|Via Manzoni, 2 - Messina|328 3287770|Medico|3|
 332848|Capillo Marcello|Via Largo Bozzi, 10 - Messina||Medico|3|
@@ -64,22 +63,22 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 321544|Caratozzolo Fabrizia Nunzia|Via Panoramica, 1416 - Messina|347 9095001|Medico|3|
 316876|Cardile Pasquale|Via Giolitti, is 26 /D - Messina|090 2927090 - 330 965353|Medico|3|
 326539|Carella Giuseppina|Via La Farina, is.R 91 - Messina|339 3105855|Medico|3|
-320927|Carfç Patrizia|Via C. Battisti - Largo Avignone, is 73 - Messina|090 2924095 - 347 1823437|Medico|3|
+320927|Carf√¨ Patrizia|Via C. Battisti - Largo Avignone, is 73 - Messina|090 2924095 - 347 1823437|Medico|3|
 321828|Caristia Francesco|Via C. Battisti - Largo Avignone, 288 - Messina|090 712202 - 339 8242326|Medico|3|
 322786|Carroccio Calogero|Via Dogali, 50 - Messina|090 2938854 - 349 0708430|Medico|3|
-319740|CassarÖ Graziella|Via Consolare Pompea, 52 - Paradiso (ME)|090 310532|Medico|3|
+319740|Cassar√≤ Graziella|Via Consolare Pompea, 52 - Paradiso (ME)|090 310532|Medico|3|
 316831|Castiglione Nunzio|Via Palermo, 304 - Messina|090 362413 347 8628644|Medico|3 (cessazione il 31/12/2021)|
 332495|Catanesi Giulia|Viale Annunziata, 10 - Messina (ME)|3391922824 - 3397494614|Medico|3|
 332495|Catanesi Giulia|Viale Giostra, 32 - Messina (ME)|339 7494614|Medico|3|
 332495|Catanesi Giulia|Via Belvedere, 4 - Gesso (ME)|339 7494614|Medico|3|
 319819|Catania Vincenza|Viale Europa, is.57 - Messina|090 696713 - 090 2938058|Medico|3|
-303973|Caudo Giacomo|Via C. Battisti, is. 96 n¯296 - Messina|090 2939996 - 336 869298|Medico|3|
+303973|Caudo Giacomo|Via C. Battisti, is. 96 n¬∞296 - Messina|090 2939996 - 336 869298|Medico|3|
 332530|Ceraulo Francesco|Via Longo is 390 n.29 - Messina|3483373304|Medico|3|
 331878|Chirico Cristina|Via Maregrosso, 34 Messina|090 9434009 - 351 7744904|Medico|3|
 323540|Chirico Valeria|||Medico|3|
 315348|Cinconze Salvatore|||Pediatra|Nord|
 304124|Cincotta Gaetano|Via Comunale - Larderia Inferiore (ME)|090 730730 - 347 3326684|Medico|3 (cessazione dal 31/12/2021)|
-320324|Coglitore Giuseppe|Via Roma, 1 - Alç Superiore (ME)||Medico|2|
+320324|Coglitore Giuseppe|Via Roma, 1 - Al√¨ Superiore (ME)||Medico|2|
 333419|Collura Salvatore|Via Modica, 5 - Messina (ME)|3474794140|Medico|3|
 333396|Conti Concetta|Via Modica, 5 - Messina (ME)|3476889374|Medico|3|
 315519|Conti Nibali Sergio|Via Placida, 85 - Messina|090 47116|Pediatra|Nord|
@@ -88,30 +87,30 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 331970|Cozzo Giovanni|Via Catania 18 - Messina|392 1117685|Medico|3|
 321008|Crescenti Angelo|Viale San Martino, 366 - Messina|090 694602 - 090 692729|Medico|3|
 321497|Crescenti Francesco|Via Sacrestia, 12 - Camaro Superiore (ME)|090 821693|Medico|3|
-31265/6|Crisafi Antonino|Via Don Luigi Sturzo, 38 - Villafranca Tirrena (ME)|090 336140 3406953598|Medico|3|
+312656|Crisafi Antonino|Via Don Luigi Sturzo, 38 - Villafranca Tirrena (ME)|090 336140 3406953598|Medico|3|
 321305|Crupi Domenico|Via Alibrandi, 11 is 499 - Messina|090 40012|Medico|3|
 332392|Cucinotta Maria Despina|Via Maregrosso, 34 - Messina|333 9075932 - 090 9434009 |Medico|3|
 316283|Cucinotta Placido|Via Giovanni del Maestro - Messina|090 774736|Medico|3|
-315918|Currï Vittorio|Piazza Matteotti - Messina|090 355324 - 347 2312439|Medico|3|
+315918|Curr√≤ Vittorio|Piazza Matteotti - Messina|090 355324 - 347 2312439|Medico|3|
 319454|Cusmano Riccardo Terzo|Piazza Matteotti,10 - Messina|090 358178 - 333 6764031|Medico|3|
-331424|Cutrç Antonino|||Medico|3|
-334092|Cutrç Antonio|Via G. Longo, 6|09040657 - 3492561230|Medico|3|
-316089|Cutrç Filippo Gregorio|Via Longo, is. 381/A - Messina (ME)|090 40657|Medico|3|
+331424|Cutr√≤ Antonino|||Medico|3|
+334092|Cutr√≤ Antonio|Via G. Longo, 6|09040657 - 3492561230|Medico|3|
+316089|Cutr√≤ Filippo Gregorio|Via Longo, is. 381/A - Messina (ME)|090 40657|Medico|3|
 315304|D'Amico Ernesto|Via Marco Polo n. 420 - ME|090 632990 - 347 3883030|Pediatra|Nord|
 323288|D'Amico Giuseppe|Via Marco Polo, 339 - Messina|090 2921858|Medico|3|
 313011|D'Angelo Alberto|Via dei Marinai,78 - Villafranca Tirrena (ME)|090 334343 - 338 6012626|Medico|4|
 304614|D'Antoni Vincenzo|Via 2 N - Villa Lina - Messina|090 42563|Medico|3|
 328991|D'Arrigo Francesco|Via Marco Polo, 339 - Messina|349 0514744|Medico|3|
-324305|D'Arrigo Giovanni|Via P.Castelli, 18 - 2¯ st via C.Battisti 226 - Messina|090 6413582 - 090 2939996|Medico|3|
-315257|D'Urso Giovanna|V.le San Martino, is 37 n¯367 - Messina|090 2922502 - 349 4429586|Pediatra|Nord|
-331651|Davç Maria|Via G. Pilli, 58 - Messina|090 670807 - 348 1165827|Medico|3|
+324305|D'Arrigo Giovanni|Via P.Castelli, 18 - 2¬∞ st via C.Battisti 226 - Messina|090 6413582 - 090 2939996|Medico|3|
+315257|D'Urso Giovanna|V.le San Martino, is 37 n¬∞367 - Messina|090 2922502 - 349 4429586|Pediatra|Nord|
+331651|Dav√¨ Maria|Via G. Pilli, 58 - Messina|090 670807 - 348 1165827|Medico|3|
 320700|David Rossana|Largo Bozzi, 10 - Messina|090 362158|Medico|3|
 332882|De Francesco Alessio|Via N. Panoramica, 31 - Messina|339 7607962|Medico|3|
 323437|De Leo Silvana|||Medico|3|
 332028|De Marco Maria|Via Nazionale n. 319 Rometta (ME)|392 4228008|Medico|4|
 332815|De Marzio Agostino|Via Comunale S. Lucia - Messina|392 2508429|Medico|4|
 332815|De Marzio Agostino|Via Pietro Castelli - Messina|392 2508429|Medico|4|
-33333/9|Di Bella Francesca|Via Del Progresso, 43 Furci Siculo (ME)|320 4927372 - 329 1957898|Medico|1|
+333339|Di Bella Francesca|Via Del Progresso, 43 Furci Siculo (ME)|320 4927372 - 329 1957898|Medico|1|
 324076|Di Pietro Giovanni Carlo|Via Pietro Castelli, 18 - Messina|090 675364 - 338 8434843|Medico|3|
 324098|Di Stefano Maria Teresa|SS 114 Km 4100 - Contesse - Messina|346 3613655 - 090 694558|Medico|3|
 326573|Dottore Giuseppe|||Medico|3|
@@ -121,11 +120,10 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 334046|Faillaci Antonio|Via Catania, 18 - Messina|328 6348800|Medico|3|
 331822|Faillaci Antonio|||Medico|3|
 322057|Falcone Alberto|||Pediatra|Nord|
-332302|FamÖ Francesco|Via La Farina, 91 - Messina|389 1887066|Medico|3|
+332302|Fam√† Francesco|Via La Farina, 91 - Messina|389 1887066|Medico|3|
 319501|Famulari Gianpaolo|Via Salvatore Navarra, Faro Superiore - (ME)|090 5726508 - 347 7211452|Medico|3|
 333658|Favazzi Antonio|Via Cesare Battisti, 226 - Messina (ME)|3283883431|Medico|3|
-319739|Fazio Anna Gaetana|Via Madonna delle Grazie, 15 - Messina|347 9432930|Medico|3|
-31973/9|Fazio Anna Gaetana|Via Madonna delle grazie, 15- Messina|3479432930|Medico|3|
+319739|Fazio Anna Gaetana|Via Madonna delle grazie, 15- Messina|3479432930|Medico|3|
 315587|Fazio Francesco|||Pediatra|Nord|
 322489|Fazio Giampietro|Via Umberto I, 456/a - Roccalumera (ME)|0942 747504 - 331 2549769|Medico|1|
 320448|Federico Giuseppe|Viale San Martino is. 37 n, 367 - Messina|090 2921635|Medico|3|
@@ -147,31 +145,28 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 324065|Genovese Rosetta|Via Catania, 16 - Messina|320 0703779|Medico|3|
 333511|Giacoponello Sarina|Viale Boccetta, 187|090 5731019 - 366 5913296|Medico|3|
 333021|Giammella Antonio|Via Gerobino Pilli, 62 (Camaro) - Messina|392 5682447|Medico|3|
-333921|Giannetto Giuseppe|Via Dogali, 50, is. 226, scala b, 1¯ piano - Messina|3472151388|Medico|3|
+333921|Giannetto Giuseppe|Via Dogali, 50, is. 226, scala b, 1¬∞ piano - Messina|3472151388|Medico|3|
 321043|Giletto Rosaria|Via Cardinale Guarino (Provinciale) - Messina|347 2232807|Medico|3|
 322239|Giletto Salvatore|Via C. Battisti, 266 - Messina|090 712594 - 349 6019859|Medico|3|
-320938|Gioffrä Giuseppe|Via Placida, 86 - Messina|090 47962 - 333 2977701|Medico|3|
-32093/8|Giofrä Giuseppe|Via Placida, 86 - Messina|3332977701|Medico|3|
-33352/2|Giuffrä Giuseppe|||||
+320938|Giofr√® Giuseppe|Via Placida, 86 - Messina|3332977701|Medico|3|
 331617|Grimaldi Ferdinando|Via Catania n. 469 - Messina|338 4665661|Medico|3|
 315941|Gulletta Antonino|Via Centonze Is.76,223 - Messina|328 308721 - 090 692963|Medico|3|
 332837|Gullino Valentino|Via Boner, 49|3519925111|Medico|3|
-321577|Ilacqua Gaetano|Via Santa Lucia N¯ 28 - Santo Stefano Briga (ME)|090 630214 - 388 4708145|Medico|3|
+321577|Ilacqua Gaetano|Via Santa Lucia n¬∞ 28 - Santo Stefano Briga (ME)|090 630214 - 388 4708145|Medico|3|
 331537|Inferrera Maria Adele|||Medico|3|
 315997|Inferrera Santi|Via Trieste, 19 - Messina|090 696362 - 338 1549151|Medico|3|
-31599/7|Inferrera Santi|Via Trieste, 19 - Messina|090 696362 3381549151|Medico|3|
 323380|Iofrida Caterina|Via S. Navarra - Faro Superiore (ME)|349 1360440 - 090 2138736|Medico|3|
 333647|La Bruna Isodoro|Via Ferdinando Stagno D'Alcontres snc- Messina|3456938685|Medico|3|
-318086|La Maestra Franco|Via Lungomare, 1 - Alç Terme (ME)|347 5634061 - 0942 744192|Pediatra|Sud|
+318086|La Maestra Franco|Via Lungomare, 1 - Al√¨ Terme (ME)|347 5634061 - 0942 744192|Pediatra|Sud|
 316169|La Malfa Lorenzo|Via Comunale, 43 - Camaro Inferiore (ME)|090 674907 - 3473011427|Medico|3|
 315212|La Paglia Rita|Via Trieste, 19 Messina|090 695166|Pediatra|Nord|
 322525|La Rosa Domenico|Via Quasimodo, 20 - Villafranca Tirrena (ME)|090 336832 - 347 2748340|Medico|4|
 324281|La Spada Santi|Via Neocastro, 22 - Messina|090 343842 - 335 5211469|Medico|3|
 320506|Labate Antonino|Via Marche, 6 is. 12 - Messina|090 691722 - 338 3828963|Medico|3|
-319512|LaganÖ Fortunato|Via S. Cosimo, 14 bis - Messina|330 695342 - 333 4899441|Medico|3|
-332427|LaganÖ Genzianella|Via F. Crispi, 296 - Alç Terme (ME)|0942-573201|Medico|2|
-334321|LaganÖ Germana Sara|Via S. Cosimo, is. 14 bis - Messina (ME)|3517767407|Medico|3|
-334321|LaganÖ Germana Sara|Via Marco Polo, 259 - Messina (ME)|3517767407|Medico|3|
+319512|Lagan¬∞ Fortunato|Via S. Cosimo, 14 bis - Messina|330 695342 - 333 4899441|Medico|3|
+332427|Lagan¬∞ Genzianella|Via F. Crispi, 296 - Al√¨ Terme (ME)|0942-573201|Medico|2|
+334321|Lagan¬∞ Germana Sara|Via S. Cosimo, is. 14 bis - Messina (ME)|3517767407|Medico|3|
+334321|Lagan¬∞ Germana Sara|Via Marco Polo, 259 - Messina (ME)|3517767407|Medico|3|
 322809|Lapi Emilia|Via Cons. Pompea 75 - Paradiso (ME)|346 5446129|Medico|3|
 313637|Lembo Aurelio|Viale Giostra, 32 - Messina|090 364352 - 338 5295245|Medico|3|
 318689|Liosi Ciro|Via Dogali, 50 - Messina|090 6409282 - 338 7763617|Medico|3|
@@ -181,12 +176,12 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 324042|Lo Schiavo Maurizio|Via Umberto I, 358 - Nizza di Sicilia (ME)|3394590620|Medico|2|
 332803|Loffredo Fabio|Via Comunale Larderia Inferiore - Messina|090 730730 - 3476780449|Medico|3|
 334241|Lupa Maria Gabriella|Viale Boccetta, 187 Messina|090 5731019 - 3389067779|Messina|3|
-316261|Maccarone Francesco|Via Cesare Battisti , is. 96 n¯226/C - Messina|090 346452 - 348 3841902|Medico|3|
+316261|Maccarone Francesco|Via Cesare Battisti , is. 96 n¬∞226/C - Messina|090 346452 - 348 3841902|Medico|3|
 331366|Maccarone Marcello|Via del Vespro n. 6 - Messina|330 489393|Medico|3|
 315428|Maiolino Maria|Via F. Crispi, 33 - Messina|090 57898|Pediatra|Nord|
 316853|Mancini Fiorenzo|Via Oreto, 9/H - Messina|090 2926621 - 347 0066573|Medico|3 (Cessazione dal 1/2/2022)|
 334172|Mandraffino Rossella|Via Maregrosso, 34 - Messina (ME)|3513950585|Medico|3|
-334024|MannarÖ Maria Benedetta|Via Francesco Sicuro, 11, int. 15 - V.le Europa - Messina|331 5792464|Medico|3|
+334024|Mannar√† Maria Benedetta|Via Francesco Sicuro, 11, int. 15 - V.le Europa - Messina|331 5792464|Medico|3|
 322079|Manuli Filippo|Via Bellinzona, 46 - Messina|090 43260|Medico|3|
 323517|Manzo Valeria|||Medico|3|
 331571|Marino Caterina|Via Consolare Pompea, 290 - Messina|340 4799481|Medico|3|
@@ -210,10 +205,10 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 322558|Montanarella Maria Pia|Via Manzoni, 45 - Messina|090 361371|Medico|3|
 333293|Morabito Antonio|Via Maregrosso, 34 - Messina|329 0649761 - 090 9434009|Medico|3|
 322569|Moschella Venera|Via Umberto, 479 - Roccalumera (ME)|0942 747341 - 347 7939859|Medico|1|
-334195|Munafï Giuseppe|Via Nazionale 188 I Santa Margherita Messina|090 9216579 - 349 349 8484991|Medico|3|
+334195|Munaf√≤ Giuseppe|Via Nazionale 188 I Santa Margherita Messina|090 9216579 - 349 349 8484991|Medico|3|
 324100|Mundo Nicoletta|Via Dante Alighieri, 27 Villafranca Tirrena (ME)|333 9829220 - 090 3352970|Medico|4|
 323448|Muraca Francesca|||Medico|3|
-321920|MuscarÖ Pietro|Via Nazionale, 132 Galati Marina (ME)|090 630574|Medico|3|
+321920|Muscar√† Pietro|Via Nazionale, 132 Galati Marina (ME)|090 630574|Medico|3|
 313820|Naso Giuseppe Luigi|SS 114 - Km 5,8 - Pal.Presti Tremestieri (ME)|090 625261 - 347 5792893|Medico|3|
 332757|Nicotra Maurizio|Via Cesare Battisti, 27 - Furci Siculo (ME)|0942 557638 - 349 5539576|Medico|1|
 314389|Oliverio Maria|Via Catania - Res Villa Dante - Messina|090 696096|Pediatra|Nord|
@@ -221,7 +216,7 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 316967|Orlando Annunziata Lucia|Via Fausto Bufalini, Pal 10 - Messina|090 693806 - 3473774146|Medico|3|
 320916|Pagano Dritto Giuseppe|Via Don Pino Puglisi - Messina|090 686595 - 338 3871556|Medico|3|
 319499|Pagano Maria Grazia|Via Catania, Res. Villa Dante - Messina|090 2926349 - 333 8502224|Medico|3|
-328888|Pagano Renato Nicolï|VIA Umberto I n.34 - Rometta Superiore (ME)|349 5047634|Medico|4|
+328888|Pagano Renato Nicol√≤|VIA Umberto I n.34 - Rometta Superiore (ME)|349 5047634|Medico|4|
 322251|Palella Giuseppe|Via Napoli is.25 - Messina|090 2926930 - 3395720700|Medico|3|
 319591|Palmieri Isabella Pia|Via Ghibellina, 131 - Messina|090 671604 - 349 6718986|Medico|3|
 331582|Panarello Aldo|Via del Mare 2 - Saponara (ME)|320 3684130|Medico|4|
@@ -234,16 +229,16 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 331981|Patti Nicola|VIA Mezzasalma, n. 19 - Rometta (ME)|366 9819838|Medico|4|
 313557|Peditto Francesco|Via Nazionale - Briga Marina (ME)|090 810089|Medico|3|
 331606|Perez Antonella|Viale P. Umberto, 49/b - Messina|328 3085234|Medico|3|
-322160|Pernice Maurizio|VIA Canova N¯ 8 - Messina|090 53108 - 335 8434561|Medico|3|
+322160|Pernice Maurizio|VIA Canova n¬∞ 8 - Messina|090 53108 - 335 8434561|Medico|3|
 307716|Perri Sergio|Via Trieste, 19 - Messina|347 9817347|Medico|3|
 322024|Petralito Pietro|Via Manzoni, 34 - Messina|090 51187|Medico|3|
 322592|Pichilli Antonia|Via Catania, Res. Villa Dante - Messina|090 2320110|Medico|3|
 320950|Pizzimenti Concetto|Viale San Martino, 367 - Messina|090 693270 - 340 5288334|Medico|3|
 333453|Previti Giuseppa Maria|Via Calabrella, 14 - Vill. Castanea|090 317573 - 333 2980480|Medico|3|
 331435|Puglisi Giovanni|Via Mezzasalma n.19 - Rometta marea (ME)|320 0234758 - 393 3830135|Medico|4|
-320870|Pulitanï Filippo|Via Dogali, 50 - Messina|090 6409282|Medico|3|
+320870|Pulitan¬∞ Filippo|Via Dogali, 50 - Messina|090 6409282|Medico|3|
 315827|Raffa Luigi|Via Dogali, 50 - Messina|090 6409282|Medico|3|
-332405|Rando Francesco|Via Crispi, 178 - Alç Terme (ME)|330 592205|Pediatra|Sud|
+332405|Rando Francesco|Via Crispi, 178 - Al√¨ Terme (ME)|330 592205|Pediatra|Sud|
 315041|Ricca Alessandra|Piazza Can. A. di Francia, n 9 Messina|090 2922858|Pediatra|Nord|
 331264|Rizzo Francesco|Via Comunale, 26 - Giampilieri Superiore (ME)|360 765391|Medico|3|
 319443|Rizzo Giovanni|Via Comunale, 11 - Mili Marina (ME)|090 881900|Medico|3|
@@ -255,13 +250,12 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 315224|Sanni Letteria Elisabetta|||Pediatra|Nord|
 334981|Santamaria Amaliachiara|Via Catania, 18 - Messina|328 9553931 - 090 311164|Medico|2|
 332871|Santoro Alfredo|Via Catania, 497 - Messina|339 6481367|Medico|3|
-323277|Santoro Alfredo|||Medico|3|
 333556|Santoro Beniamino|Via Leonardo Sciascia, 4 - (ME)|339 4868524|Medico|3|
 324031|Santoro Giuseppe|Via Umberto I, 358 - Nizza di Sicilia (ME)|389 2710835 - 0942 792380|Medico|2|
 332529|Savasta Francesco|Corso Garibaldi, 137 - Messina|090 679006 - 328 0144402|Medico|3|
 319898|Scafidi Paolo|Via Faranda, 42 - Messina|090 716218|Medico|3|
 333112|Scarcella Loredana Antonietta|||Medico|2|
-333112|Scarcella Loretana Antonietta|Umbreto I¯, 377 Nizza di Sicilia (ME)|338 2130056|Medico|2|
+333112|Scarcella Loretana Antonietta|Umberto I, 377 Nizza di Sicilia (ME)|338 2130056|Medico|2|
 321214|Scarfone Valentino|Via N.Panoramica, 31 V.le Europa is.57- Messina|349 0890050|Medico|3 (cessazione 25/12/2021)|
 319648|Scavino Francesco|V.le Annunziata, 90 - pal.B - Messina|090 8884563|Medico|3|
 321987|Scoglio Riccardo|Via Comunale 31/B - Bordonaro (ME)|090 687676|Medico|3|
@@ -271,25 +265,25 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 328957|Signorino Gianbattista|Viale Annunziata, 10 - Messina|090 9035859 - 347 9055596|Medico|3|
 331344|Silipo Fortunata|Via Catania , 18 - Messina|090 696653 - 347 4996561|Medico|3|
 315473|Siracusano Maria Francesca|Viale Boccetta is. 374 Messina|090 679006|Pediatra|Nord|
-316090|Siragusa Giosuä Rino|Via Palermo, 551 - Messina|090 6019318|Medico|3|
+316090|Siragusa Giosu√® Rino|Via Palermo, 551 - Messina|090 6019318|Medico|3|
 334149|Sirna Dino|Via Placida, 82 A - Messina|090 2405056- 350 0600353|Medico|3|
 316409|Sirna Roberto|Piazza S. Maria La Nuova, 433 - Messina|090 364524 - 347 0646457|Medico|3|
-332040|Soraci Caterina|Via M. polo n¯ 186 - Messina|349 2663827|Medico|3|
+332040|Soraci Caterina|Via M. polo n¬∞ 186 - Messina|349 2663827|Medico|3|
 316978|Soraci Giuliano|Via Garibaldi, 196 - Messina|090 40099|Medico|3|
 332039|Sorrenti Santo|Via Placida, 91 - Messina|339 1177817|Medico|3|
-314356|Spanï Diego Pantaleone|||Medico|3|
+314356|Span¬∞ Diego Pantaleone|||Medico|3|
 326596|Spiritosanto Roberto|Via Placida, 91 - Messina|328 6869936|Medico|3|
-33357/8|Stelitano Mario Giovanni|Via Francesco Crispi, 492 - Alç Terme|340 3973911|Medico|2|
+333578|Stelitano Mario Giovanni|Via Francesco Crispi, 492 - Al√¨ Terme|340 3973911|Medico|2|
 331765|Subba Enrica|||Medico|3|
 331902|Sulfaro Francesca|Via Marina, 61 - Ganzirri (ME)|334 2112970|Medico|3|
-326460|TamÖ Giuseppe|Via Cremona, 4 - Messina|090 2404580 - 389 9420645|Medico|3|
-320676|TamÖ Sebastiano|Via La Farina , is. R - Messina|090 693050|Medico|3|
+326460|Tam√† Giuseppe|Via Cremona, 4 - Messina|090 2404580 - 389 9420645|Medico|3|
+320676|Tam√† Sebastiano|Via La Farina , is. R - Messina|090 693050|Medico|3|
 329050|Termini Lidia|Via Risorgimento, 196 - Messina|339 5307741|Medico|3|
-329050|Termini Lidia|Via 3¯ palazzo, 13 - Torre Faro (ME)|339 5307741|Medico|3|
+329050|Termini Lidia|Via 3¬∞ palazzo, 13 - Torre Faro (ME)|339 5307741|Medico|3|
 320687|Tigani Salvatore|Via Nazionale, 42 - Orto Liuzzo (ME)|090 348238 - 347 2937015|Medico|3|
 319751|Totaro Salvatore|Viale Italia, 131 - Messina|090 672759|Medico|3|
 331958|Tramonte Monica|Via P. castelli n. 18 - Messina|340 7192913|Medico|3|
-318110|Trimarchi Caterina Olimpia|Viale della LibertÖ 151 is. 513 Messina|090 41197 - 347 6569404|Pediatra|Nord|
+318110|Trimarchi Caterina Olimpia|Viale della Libert√† 151 is. 513 Messina|090 41197 - 347 6569404|Pediatra|Nord|
 319773|Umberto Mammola|Via Placida, 85 Messina|090 340385|Medico|3|
 331286|Utano Concetta|Via Roma, 488 - Scaletta Zanclea (ME)|3281983303|Medico|2|
 315986|Vecchio Gaetano|Viale San Martino, is 56 - Messina|090 2922140|Medico|3|
@@ -298,10 +292,10 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 323482|Vita Daniela|||Medico|3|
 333932|Zagami Giuseppe|Via Cesare Battisti, 226/C - Messina|090 2939996|Medico|3|
 319579|Zagarella Sebastiano|Via G. delle Bande Nere, 4 sc. B - Messina|090 695610 - 339 4743156|Medico|3|
-331310|Zanghç Maria|Via Don Luigi Sturzo, 38 Villafranca (ME)|090 336140|Medico|4|
+331310|Zangh√¨ Maria|Via Don Luigi Sturzo, 38 Villafranca (ME)|090 336140|Medico|4|
 320551|Zappia Enzo|Viale R. Margherita, 99 - Messina|090 49870 - 338 9886606|Medico|3|
 332860|Zirilli Fernando|Via Catania 497 Pal. Palano - Messina|380 7186854|Medico|3|
-334321|LaganÖ Germana Sara|Via Nazionale, 192 - Briga Marina (ME)|351 7767407|Medico|3|
+334321|Lagan¬∞ Germana Sara|Via Nazionale, 192 - Briga Marina (ME)|351 7767407|Medico|3|
 334787|D'Angelo Gabriella|Viale San Martino, 350 - Messina|349 3978564|Pediatra|Nord|
 333841|Bonanzinga Salvatore|Via Umberto I, 36, Rometta (ME)|348 3476550|Medico|4|
 334241|Lupa Maria Gabriella|Viale S.S Annunziata n.90, Messina|090 5731019 - 3389067779|Medico|3|
@@ -315,7 +309,7 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 335039|Hamel Alessio|Viale Principe Umberto, 49/B Messina|345 1271630|Medico|3|
 335121|Comerci Maria Giovanna|Via Salita Larderia, 4/A Messina|351 5026836|Medico|3|
 334981|Santamaria Amalia Chiara|Via Giolitti, 26/D - Messina|371 5124406|Medico|3|
-335028|Calabrï Gaetano|Via Catania, 497 Palazzo Palano|347 6690367|Medico|3|
+335028|Calabr√≤ Gaetano|Via Catania, 497 Palazzo Palano|347 6690367|Medico|3|
 335108|Giordano Francesco|Via Cesare Battisti, 226/C - Messina|371 7726420|Medico|3|
 335108|Giordano Francesco|Via Nazionale, 192 Briga Marina (Me)|371 7726420|Medico|3|
 335142|De Leonardis Giulia|Via Placida, 82/A - Messina|351 4972489|Medico|3|
@@ -329,10 +323,10 @@ cod_reg|nome_cognome|indirizzo|recapiti|tipo|ambito|quartiere
 335187|Romeo Salvatore|Vale F. Stagno D'Alcontres, 13 - Messina|334 9709816|Medico|3|
 335256|Lo Giudice Luigi|Via Canova, 128 - Messina|342 7923382|Medico|3|
 335198|Salemi Monica|Via G. Garibaldi, 143 - Messina|090 679006|Medico|3|
-335028|Calabrï Gaetano|Via Consolare Valeria, 229|376 2573323 - 3519489333|Medico|3|
+335028|Calabr√≤ Gaetano|Via Consolare Valeria, 229|376 2573323 - 3519489333|Medico|3|
 335267|Puglisi Allegra Emilio|Via Cremona, 5 Messina|090 2924585 - 324 6032130|Medico|3|
 335290|Giuseppe Lauricella|Via C. Pompea, 149 Messina|329 3757620|Medico|3|
-335302|Fornaro Giovanni|Via Nazionale SpartÖ, 62 Messina|339 1175783|Medico|3|
+335302|Fornaro Giovanni|Via Nazionale Spart√†, 62 Messina|339 1175783|Medico|3|
 335313|Di Gaetano Alessandra|Via Madonna delle Grazie, 22 Messina|3514041428|Medico|3|
 335381|Milicia Fabio|Via Ilaria Alpi, 3 Messina|320 1564360|Medico|3|
 335416|Manti Marta|Via Catania, 17 Messina|090 311164 - 346 3173907|Medico|3|

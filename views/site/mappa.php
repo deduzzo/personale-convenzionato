@@ -9,7 +9,7 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 
 <div class="site-mappa">
     <h1><?= $this->title ?></h1>
-    
+
     <div id="map" style="height: 800px; width: 100%; margin-bottom: 20px;"></div>
 
     <div id="report" class="mt-4">
@@ -19,7 +19,7 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 </div>
 
 <!-- Carica l'API di Google Maps prima dello script -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<?= Yii::$app->params['googleMapsApiKey'] ?>"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= $_ENV['GOOGLE_MAPS_API_KEY'] ?>"></script>
 
 <script>
 // Variabili globali
@@ -40,7 +40,7 @@ let mediciPerCircoscrizione = {
 function initializeMap() {
     // Coordinate approssimative di Messina
     const messina = { lat: 38.19394, lng: 15.55256 };
-    
+
     // Crea la mappa
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 12,
@@ -53,7 +53,7 @@ function initializeMap() {
 
     // Converti il GeoJSON in oggetto JavaScript
     const geojsonData = <?= isset($geojsonString) ? $geojsonString : '{"type": "FeatureCollection", "features": []}' ?>;
-    
+
     // Array di colori predefiniti se non forniti dal server
     const defaultColors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080', '#008080'];
     const colors = <?= isset($colors) ? json_encode($colors) : 'defaultColors' ?>;
@@ -65,7 +65,7 @@ function initializeMap() {
             lat: coord[1],
             lng: coord[0]
         }));
-        
+
         // Crea il poligono con il colore corrispondente
         const polygon = new google.maps.Polygon({
             paths: paths,
@@ -78,12 +78,12 @@ function initializeMap() {
         });
 
         polygons.push(polygon);
-        
+
         // Calcola il centro del poligono per posizionare l'etichetta
         const bounds = new google.maps.LatLngBounds();
         paths.forEach(path => bounds.extend(path));
         const center = bounds.getCenter();
-        
+
         // Crea l'etichetta con il nome della circoscrizione
         new google.maps.Marker({
             position: center,
@@ -141,6 +141,14 @@ function geocodeAddress(medico) {
                     title: `[${medico.cod_reg}] ${medico.nome_cognome} [${medico.circoscrizione}]`
                 });
 
+                // post location to action to save in db
+                $.post('<?= Yii::$app->urlManager->createUrl(['site/save-location']) ?>', {
+                    id_rapporto: medico.id_rapporto,
+                    cod_reg: medico.cod_reg,
+                    lat: results[0].geometry.location.lat(),
+                    lng: results[0].geometry.location.lng()
+                });
+
                 // Aggiungi info window
                 const infowindow = new google.maps.InfoWindow({
                     content: `<div style="padding: 10px;">
@@ -175,7 +183,7 @@ function geocodeAddress(medico) {
 function updateReport() {
     const reportDiv = document.getElementById('reportContent');
     let html = '<div class="row">';
-    
+
     for (let circ in mediciPerCircoscrizione) {
         if (mediciPerCircoscrizione[circ].length > 0) {
             html += `
@@ -187,7 +195,7 @@ function updateReport() {
                         <div class="card-body">
                             <p>Totale medici: ${mediciPerCircoscrizione[circ].length}</p>
                             <ul>
-                                ${mediciPerCircoscrizione[circ].map(medico => 
+                                ${mediciPerCircoscrizione[circ].map(medico =>
                                     `<li>[${medico.cod_reg}] ${medico.nome_cognome}</li>`
                                 ).join('')}
                             </ul>
@@ -196,7 +204,7 @@ function updateReport() {
                 </div>`;
         }
     }
-    
+
     html += '</div>';
     reportDiv.innerHTML = html;
 }
