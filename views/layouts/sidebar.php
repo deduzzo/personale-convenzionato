@@ -67,10 +67,10 @@ $themeMazer = MainAsset::register($this);
                     </a>
                     <ul class="submenu">
                         <li class="submenu-item">
-                            <a href="<?= Url::toRoute(['site/mmg-pls-mappa']) ?>">Mappa</a>
+                            <a href="<?= Url::toRoute(['mmg-pls/mappa']) ?>">Mappa</a>
                         </li>
                         <li class="submenu-item">
-                            <a href="<?= Url::toRoute(['site/mmg-pls-indirizzi']) ?>">Indirizzi</a>
+                            <a href="<?= Url::toRoute(['mmg-pls/indirizzi']) ?>">Indirizzi</a>
                         </li>
                     </ul>
                 </li>

@@ -4,6 +4,10 @@
 /* @var $mediciJson string */
 /* @var $colors array */
 
+use app\models\Ambiti;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
+
 $this->title = 'Mappa Circoscrizioni e Medici';
 ?>
 
@@ -16,27 +20,49 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="form-group">
                         <label for="filtroAmbiti">Ambito:</label>
-                        <select id="filtroAmbiti" class="form-select" multiple>
-                            <!-- Options will be populated dynamically -->
-                        </select>
+                        <?= Select2::widget([
+                            'id' => 'filtroAmbiti',
+                            'name' => 'filtroAmbiti',
+                            'data' => ArrayHelper::map(Ambiti::find()->orderBy('descrizione asc')->asArray()->all(), 'id', 'descrizione'),
+                            'theme' => Select2::THEME_BOOTSTRAP,
+                            'options' => [
+                                'multiple' => true,
+                                'placeholder' => 'Seleziona ambiti...'
+                            ],
+                            'pluginOptions' =>
+                                [ 'allowClear' => true ],
+                        ]); ?>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="filtroTipo">Tipo Rapporto:</label>
-                        <select id="filtroTipo" class="form-select">
-                            <option value="">Tutti</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
+                        <?= Select2::widget([
+                            'id' => 'filtroTipo',
+                            'name' => 'filtroTipo',
+                            'data' => ArrayHelper::map(\app\models\RapportiTipologia::find()->asArray()->all(), 'id', 'descrizione'),
+                            'theme' => Select2::THEME_BOOTSTRAP,
+                            'options' => [
+                                'multiple' => true,
+                                'placeholder' => 'Seleziona tipo...'
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'width' => '100%'
+                            ]
+                        ]); ?>
                     </div>
                 </div>
             </div>
             <div class="mt-3">
                 <button id="applicaFiltri" class="btn btn-primary">Applica Filtri</button>
                 <button id="resetFiltri" class="btn btn-secondary ms-2">Reset</button>
+                <button id="esportaExcel" class="btn btn-success ms-2">
+                    <i class="fas fa-file-excel"></i> Esporta in Excel
+                </button>
             </div>
         </div>
     </div>
@@ -70,7 +96,6 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         '6': [],
         'ALTRO': []
     };
-
     // Funzione di inizializzazione della mappa
     function initializeMap() {
         // Coordinate approssimative di Messina
@@ -155,63 +180,88 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         const mediciData = <?= $mediciJson ?>;
         allMedici = mediciData; // Salva tutti i medici per applicare i filtri dopo
         processMedici(mediciData);
-        populateFilters(mediciData);
 
+        console.log("init")
         // Aggiungi listener ai pulsanti di filtro
         document.getElementById('applicaFiltri').addEventListener('click', applicaFiltri);
         document.getElementById('resetFiltri').addEventListener('click', resetFiltri);
     }
 
-    // Popola i filtri con i valori disponibili
-    function populateFilters(medici) {
-        const ambitiSelect = document.getElementById('filtroAmbiti');
-        const tipiSelect = document.getElementById('filtroTipo');
+    // Funzione per esportare i dati in Excel
+    function esportaExcel() {
+        // Raccogli i dati dai filtri applicati
+        const ambitiSelezionati = $('#filtroAmbiti').val() || [];
+        const tipoSelezionato = $('#filtroTipo').val() || [];
 
-        // Raccogli tutti i valori unici di ambito e tipo
-        medici.forEach(medico => {
-            if (medico.ambito) {
-                ambiti.add(medico.ambito);
+        console.log('Esportazione in corso...');
+        // Prepara i dati per l'esportazione
+        let mediciDaEsportare = [];
+        for (let circ in mediciPerCircoscrizione) {
+            if (mediciPerCircoscrizione[circ].length > 0) {
+                mediciPerCircoscrizione[circ].forEach(medico => {
+                    medico.circoscrizione = circ;
+                    mediciDaEsportare.push(medico);
+                });
             }
-            if (medico.tipo) {
-                tipiRapporto.add(medico.tipo);
-            }
-        });
+        }
 
-        // Popola il multiselect degli ambiti
-        ambiti.forEach(ambito => {
-            const option = document.createElement('option');
-            option.value = ambito;
-            option.textContent = ambito;
-            ambitiSelect.appendChild(option);
-        });
-
-        // Popola il select dei tipi
-        tipiRapporto.forEach(tipo => {
-            const option = document.createElement('option');
-            option.value = tipo;
-            option.textContent = tipo;
-            tipiSelect.appendChild(option);
-        });
+        // Invia i dati al server per generare l'Excel
+        fetch('<?= Yii::$app->urlManager->createUrl(['mmg-pls/esporta-excel']) ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+            },
+            body: JSON.stringify({
+                medici: mediciDaEsportare,
+                filtri: {
+                    ambiti: ambitiSelezionati,
+                    tipi: tipoSelezionato
+                }
+            })
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                // Crea un link per il download
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'medici_esportazione.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Errore durante l\'esportazione:', error));
     }
+
+    // Aggiungi l'event listener al pulsante di esportazione
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeMap();
+        // Aggiungi l'event listener al pulsante di esportazione
+        document.getElementById('esportaExcel').addEventListener('click', esportaExcel);
+    });
 
     // Applica i filtri selezionati
     function applicaFiltri() {
+        console.log('Applicando filtri');
         clearMarkers();
         resetMediciPerCircoscrizione();
 
-        const ambitiSelezionati = Array.from(document.getElementById('filtroAmbiti').selectedOptions).map(opt => opt.value);
-        const tipoSelezionato = document.getElementById('filtroTipo').value;
+        const ambitiSelezionati = $('#filtroAmbiti').val() || [];
+        const tipoSelezionato = $('#filtroTipo').val();
+        // convert ambitiSelezionati and tipoSelezionato to int
 
         const mediciFiltrati = allMedici.filter(medico => {
             let matchAmbito = true;
             let matchTipo = true;
-
+            console.log("bau")
             if (ambitiSelezionati.length > 0) {
-                matchAmbito = medico.ambito && ambitiSelezionati.includes(medico.ambito);
+                matchAmbito = medico.id_ambito && ambitiSelezionati.includes(medico.id_ambito.toString());
             }
 
             if (tipoSelezionato) {
-                matchTipo = medico.tipo === tipoSelezionato;
+                matchTipo = medico.id_tipo && tipoSelezionato.includes(medico.id_tipo.toString());
             }
 
             return matchAmbito && matchTipo;
@@ -222,8 +272,8 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 
     // Reset dei filtri
     function resetFiltri() {
-        document.getElementById('filtroAmbiti').selectedIndex = -1;
-        document.getElementById('filtroTipo').selectedIndex = 0;
+        $('#filtroAmbiti').val(null).trigger('change');
+        $('#filtroTipo').val('').trigger('change');
 
         clearMarkers();
         resetMediciPerCircoscrizione();
@@ -258,54 +308,61 @@ $this->title = 'Mappa Circoscrizioni e Medici';
     }
 
     function addPinMedico(medico) {
-        {
-            // create location from lat and lng
-            let location = new google.maps.LatLng(medico.lat, medico.lng);
-            const marker = new google.maps.Marker({
-                map: map,
-                position: location,
-                title: `[${medico.cod_reg}] ${medico.nome_cognome} [${medico.circoscrizione}]`
-            });
+        // create location from lat and lng
+        let location = new google.maps.LatLng(medico.lat, medico.lng);
 
-            // Aggiungi info window
-            const infowindow = new google.maps.InfoWindow({
-                content: `<div style="padding: 10px;">
-                        <strong>[${medico.cod_reg}] ${medico.nome_cognome}</strong><br>
-                        ${medico.indirizzo}<br>
-                        Circoscrizione: ${medico.circoscrizione}
-                        ${medico.ambito ? '<br>Ambito: ' + medico.ambito : ''}
-                        <br>Tipo: ${medico.tipo || 'N/D'}
-                    </div>`
-            });
+        // Determina la circoscrizione in base alle coordinate
+        const getCircoscrizioneByCoordinates = (lat, lng) => {
+            const point = new google.maps.LatLng(lat, lng);
 
-            marker.addListener('click', () => {
-                infowindow.open(map, marker);
-            });
-
-            markers.push(marker);
-
-            // Determina la circoscrizione in base alle coordinate
-            const getCircoscrizioneByCoordinates = (lat, lng) => {
-                const point = new google.maps.LatLng(lat, lng);
-
-                for (let i = 0; i < polygons.length; i++) {
-                    if (google.maps.geometry.poly.containsLocation(point, polygons[i])) {
-                        // I poligoni sono nello stesso ordine delle circoscrizioni (1-6)
-                        return (i + 1).toString();
-                    }
+            for (let i = 0; i < polygons.length; i++) {
+                if (google.maps.geometry.poly.containsLocation(point, polygons[i])) {
+                    // I poligoni sono nello stesso ordine delle circoscrizioni (1-6)
+                    return (i + 1).toString();
                 }
-
-                // Se non è in nessuna circoscrizione
-                return 'ALTRO';
             }
 
-            // Aggiorna il conteggio per circoscrizione
-            const circ = getCircoscrizioneByCoordinates(medico.lat, medico.lng);
-            if (!mediciPerCircoscrizione[circ]) {
-                mediciPerCircoscrizione[circ] = [];
-            }
-            mediciPerCircoscrizione[circ].push(medico);
+            // Se non è in nessuna circoscrizione
+            return 'ALTRO';
         }
+
+        // Calcola la circoscrizione prima di creare l'infowindow
+        const circ = getCircoscrizioneByCoordinates(medico.lat, medico.lng);
+
+        const marker = new google.maps.Marker({
+            map: map,
+            position: location,
+            title: `[${medico.cod_reg}] ${medico.nome_cognome} [${circ}]`
+        });
+
+        // Aggiungi info window con la circoscrizione corretta
+        const infowindow = new google.maps.InfoWindow({
+            content: `<div style="padding: 10px;">
+                    <strong>[${medico.cod_reg}] ${medico.nome_cognome}</strong><br>
+                    ${medico.indirizzo}<br>
+                    Circoscrizione: ${circ}
+                    ${medico.ambito ? '<br>Ambito: ' + medico.ambito : ''}
+                    <br>Tipo: ${medico.tipo || 'N/D'}
+                </div>`
+        });
+
+        // Apri infowindow al passaggio del mouse
+        marker.addListener('mouseover', () => {
+            infowindow.open(map, marker);
+        });
+
+        // Chiudi infowindow quando il mouse esce
+        marker.addListener('mouseout', () => {
+            infowindow.close();
+        });
+
+        markers.push(marker);
+
+        // Aggiorna il conteggio per circoscrizione
+        if (!mediciPerCircoscrizione[circ]) {
+            mediciPerCircoscrizione[circ] = [];
+        }
+        mediciPerCircoscrizione[circ].push(medico);
     }
 
     // Funzione per geocodificare un singolo indirizzo
@@ -314,7 +371,7 @@ $this->title = 'Mappa Circoscrizioni e Medici';
             geocoder.geocode({address: medico.indirizzo}, (results, status) => {
                 if (status === 'OK') {
                     // post location to action to save in db
-                    $.post('<?= Yii::$app->urlManager->createUrl(['site/save-location']) ?>', {
+                    $.post('<?= Yii::$app->urlManager->createUrl(['mmg-pls/save-location']) ?>', {
                         id_rapporto: medico.id_rapporto,
                         cod_reg: medico.cod_reg,
                         lat: results[0].geometry.location.lat(),
@@ -345,9 +402,9 @@ $this->title = 'Mappa Circoscrizioni e Medici';
                         <div class="card-body">
                             <p>Totale medici: ${mediciPerCircoscrizione[circ].length}</p>
                             <ul>
-                                ${mediciPerCircoscrizione[circ].map(medico =>
-                    `<li>[${medico.cod_reg}] ${medico.nome_cognome} - ${medico.tipo || 'N/D'}</li>`
-                ).join('')}
+${mediciPerCircoscrizione[circ].sort((a, b) => a.nome_cognome.localeCompare(b.nome_cognome)).map(medico =>
+    `<li>[${medico.cod_reg}] ${medico.nome_cognome} - ${medico.tipo || 'N/D'}</li>`
+).join('')}
                             </ul>
                         </div>
                     </div>
@@ -358,20 +415,6 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         html += '</div>';
         reportDiv.innerHTML = html;
     }
-
-    // Inizializza la mappa quando il documento è pronto
-    document.addEventListener('DOMContentLoaded', function () {
-        initializeMap();
-    });
 </script>
 
-<!-- Aggiungi supporto per multiselect -->
-<style>
-    #filtroAmbiti option {
-        padding: 5px;
-    }
-    #filtroAmbiti {
-        height: auto;
-        min-height: 80px;
-    }
-</style>
+

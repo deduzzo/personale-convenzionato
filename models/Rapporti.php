@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\enums\FileImportMediciNAR;
 use Yii;
 
 /**
@@ -125,4 +126,30 @@ class Rapporti extends \yii\db\ActiveRecord
         return $this->hasOne(RapportiTipologia::class, ['id' => 'id_tipologia']);
     }
 
+    // aggiornaIndirizzoPrimario($indirizzo, $lat, $lng);
+    public function aggiornaIndirizzoPrimario($nuovoIndirizzo, $lat, $lng)
+    {
+        $indirizzo = Indirizzi::find()->where(['id_rapporto' => $this->id, 'primario' => true])->one();
+        if (!$indirizzo) {
+            $indirizzo = new Indirizzi();
+            $indirizzo->id_rapporto = $this->id;
+            $indirizzo->primario = true;
+            $indirizzo->attivo=true;
+        }
+        $indirizzo->indirizzo = $nuovoIndirizzo;
+        $indirizzo->lat = $lat;
+        $indirizzo->long = $lng;
+        $indirizzo->save();
+    }
+
+    public function getCodRegionaleSeEsiste() {
+        $car = RapportiCaratteristiche::find()->where([
+            'id_rapporto' => $this->id,
+            'id_caratteristica' => FileImportMediciNAR::COD_REG_ID
+        ])->one();
+        if ($car) {
+            return $car->valore;
+        }
+        else return null;
+    }
 }
