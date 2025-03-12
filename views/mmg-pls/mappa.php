@@ -76,13 +76,14 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 </div>
 
 <!-- Carica l'API di Google Maps prima dello script -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<?= $_ENV['GOOGLE_MAPS_API_KEY'] ?>&libraries=geometry"></script>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= $_ENV['GOOGLE_MAPS_API_KEY'] ?>&v=weekly&libraries=geometry,marker" defer></script>
+<script src="https://unpkg.com/@googlemaps/markerclusterer@2.5.2/dist/index.min.js"></script>
 <script>
     // Variabili globali
     let map;
     let geocoder;
     let markers = [];
+    let markerCluster;
     let polygons = [];
     let allMedici = [];
     let tipiRapporto = new Set();
@@ -96,16 +97,26 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         '6': [],
         'ALTRO': []
     };
+
     // Funzione di inizializzazione della mappa
     function initializeMap() {
         // Coordinate approssimative di Messina
         const messina = {lat: 38.19394, lng: 15.55256};
 
-        // Crea la mappa
+        // Crea la mappa con opzioni per migliorare le performance
         map = new google.maps.Map(document.getElementById("map"), {
             zoom: 12,
             center: messina,
-            mapTypeId: 'terrain'
+            mapTypeId: 'terrain',
+            maxZoom: 18,
+            minZoom: 9,
+            gestureHandling: 'greedy',
+            zoomControl: true,
+            mapTypeControl: true,
+            scaleControl: true,
+            streetViewControl: true,
+            rotateControl: false,
+            fullscreenControl: true
         });
 
         // Inizializza il geocoder
@@ -178,13 +189,156 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 
         // Geocodifica gli indirizzi dei medici
         const mediciData = <?= $mediciJson ?>;
-        allMedici = mediciData; // Salva tutti i medici per applicare i filtri dopo
+        allMedici = mediciData;
         processMedici(mediciData);
 
-        console.log("init")
         // Aggiungi listener ai pulsanti di filtro
         document.getElementById('applicaFiltri').addEventListener('click', applicaFiltri);
         document.getElementById('resetFiltri').addEventListener('click', resetFiltri);
+        document.getElementById('esportaExcel').addEventListener('click', esportaExcel);
+    }
+
+    // Funzione per processare i medici in modo asincrono
+    async function processMedici(medici) {
+        // Array temporaneo per raccogliere tutti i marker
+        const newMarkers = [];
+
+        // Reset del conteggio medici per circoscrizione
+        resetMediciPerCircoscrizione();
+
+        for (const medico of medici) {
+            if (!medico.lat && !medico.lng) {
+                await geocodeAddress(medico);
+                // Piccola pausa per evitare di sovraccaricare l'API
+                await new Promise(resolve => setTimeout(resolve, 100));
+            } else {
+                const marker = createMarkerForMedico(medico);
+                if (marker) newMarkers.push(marker);
+            }
+        }
+
+        // Aggiungi tutti i marker al cluster in una sola operazione
+        markers = newMarkers;
+        addMarkersToCluster();
+        updateReport();
+    }
+
+    // Funzione per creare un marker per un medico
+    function createMarkerForMedico(medico) {
+        if (!medico.lat || !medico.lng) return null;
+
+        const location = new google.maps.LatLng(medico.lat, medico.lng);
+        const circ = getCircoscrizioneByCoordinates(medico.lat, medico.lng);
+
+        const marker = new google.maps.Marker({
+            position: location,
+            title: `[${medico.cod_reg}] ${medico.nome_cognome} [${circ}]`
+        });
+
+        const infowindow = new google.maps.InfoWindow({
+            content: `<div style="padding: 10px;">
+                    <strong>[${medico.cod_reg}] ${medico.nome_cognome}</strong><br>
+                    ${medico.indirizzo}<br>
+                    Circoscrizione: ${circ}
+                    ${medico.ambito ? '<br>Ambito: ' + medico.ambito : ''}
+                    <br>Tipo: ${medico.tipo || 'N/D'}
+                </div>`
+        });
+
+        marker.addListener('mouseover', () => {
+            infowindow.open(map, marker);
+        });
+
+        marker.addListener('mouseout', () => {
+            infowindow.close();
+        });
+
+        // Aggiorna il conteggio per circoscrizione
+        if (!mediciPerCircoscrizione[circ]) {
+            mediciPerCircoscrizione[circ] = [];
+        }
+        mediciPerCircoscrizione[circ].push(medico);
+
+        return marker;
+    }
+
+    // Funzione per aggiungere i marker al cluster
+    function addMarkersToCluster() {
+        // Se esisteva già un cluster, puliscilo
+        if (markerCluster) {
+            markerCluster.clearMarkers();
+        }
+
+        // Crea un nuovo cluster con i marker
+        markerCluster = new markerClusterer.MarkerClusterer({
+            map,
+            markers,
+            algorithm: new markerClusterer.GridAlgorithm({
+                maxDistance: 80,
+                gridSize: 60
+            }),
+            renderer: {
+                render: ({ count, position }) => {
+                    return new google.maps.Marker({
+                        position,
+                        label: { text: String(count), color: "#ffffff" },
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: Math.max(12, count / 4 + 8),
+                            fillColor: "#1c73d4",
+                            fillOpacity: 0.9,
+                            strokeWeight: 2,
+                            strokeColor: "#ffffff"
+                        },
+                        zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count
+                    });
+                }
+            }
+        });
+    }
+
+    // Funzione per determinare la circoscrizione in base alle coordinate
+    function getCircoscrizioneByCoordinates(lat, lng) {
+        const point = new google.maps.LatLng(lat, lng);
+
+        for (let i = 0; i < polygons.length; i++) {
+            if (google.maps.geometry.poly.containsLocation(point, polygons[i])) {
+                // I poligoni sono nello stesso ordine delle circoscrizioni (1-6)
+                return (i + 1).toString();
+            }
+        }
+
+        // Se non è in nessuna circoscrizione
+        return 'ALTRO';
+    }
+
+    // Funzione per geocodificare un singolo indirizzo
+    function geocodeAddress(medico) {
+        return new Promise((resolve) => {
+            geocoder.geocode({address: medico.indirizzo}, (results, status) => {
+                if (status === 'OK') {
+                    // post location to action to save in db
+                    $.post('<?= Yii::$app->urlManager->createUrl(['mmg-pls/save-location']) ?>', {
+                        id_rapporto: medico.id_rapporto,
+                        cod_reg: medico.cod_reg,
+                        lat: results[0].geometry.location.lat(),
+                        lng: results[0].geometry.location.lng()
+                    });
+                    medico.lat = results[0].geometry.location.lat();
+                    medico.lng = results[0].geometry.location.lng();
+
+                    const marker = createMarkerForMedico(medico);
+                    if (marker) {
+                        markers.push(marker);
+                        // Aggiorna il cluster dopo aver aggiunto il nuovo marker
+                        if (markerCluster) {
+                            markerCluster.addMarker(marker);
+                        }
+                    }
+                }
+                resolve();
+            });
+        });
     }
 
     // Funzione per esportare i dati in Excel
@@ -193,7 +347,6 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         const ambitiSelezionati = $('#filtroAmbiti').val() || [];
         const tipoSelezionato = $('#filtroTipo').val() || [];
 
-        console.log('Esportazione in corso...');
         // Prepara i dati per l'esportazione
         let mediciDaEsportare = [];
         for (let circ in mediciPerCircoscrizione) {
@@ -235,32 +388,23 @@ $this->title = 'Mappa Circoscrizioni e Medici';
             .catch(error => console.error('Errore durante l\'esportazione:', error));
     }
 
-    // Aggiungi l'event listener al pulsante di esportazione
-    document.addEventListener('DOMContentLoaded', function () {
-        initializeMap();
-        // Aggiungi l'event listener al pulsante di esportazione
-        document.getElementById('esportaExcel').addEventListener('click', esportaExcel);
-    });
-
     // Applica i filtri selezionati
     function applicaFiltri() {
-        console.log('Applicando filtri');
         clearMarkers();
         resetMediciPerCircoscrizione();
 
         const ambitiSelezionati = $('#filtroAmbiti').val() || [];
-        const tipoSelezionato = $('#filtroTipo').val();
-        // convert ambitiSelezionati and tipoSelezionato to int
+        const tipoSelezionato = $('#filtroTipo').val() || [];
 
         const mediciFiltrati = allMedici.filter(medico => {
             let matchAmbito = true;
             let matchTipo = true;
-            console.log("bau")
+
             if (ambitiSelezionati.length > 0) {
                 matchAmbito = medico.id_ambito && ambitiSelezionati.includes(medico.id_ambito.toString());
             }
 
-            if (tipoSelezionato) {
+            if (tipoSelezionato && tipoSelezionato.length > 0) {
                 matchTipo = medico.id_tipo && tipoSelezionato.includes(medico.id_tipo.toString());
             }
 
@@ -273,7 +417,7 @@ $this->title = 'Mappa Circoscrizioni e Medici';
     // Reset dei filtri
     function resetFiltri() {
         $('#filtroAmbiti').val(null).trigger('change');
-        $('#filtroTipo').val('').trigger('change');
+        $('#filtroTipo').val(null).trigger('change');
 
         clearMarkers();
         resetMediciPerCircoscrizione();
@@ -282,7 +426,9 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 
     // Pulisci tutti i marker dalla mappa
     function clearMarkers() {
-        markers.forEach(marker => marker.setMap(null));
+        if (markerCluster) {
+            markerCluster.clearMarkers();
+        }
         markers = [];
     }
 
@@ -291,99 +437,6 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         for (let circ in mediciPerCircoscrizione) {
             mediciPerCircoscrizione[circ] = [];
         }
-    }
-
-    // Funzione per processare i medici in modo asincrono
-    async function processMedici(medici) {
-        for (const medico of medici) {
-            if (!medico.lat && !medico.lng) {
-                await geocodeAddress(medico);
-                // Piccola pausa per evitare di sovraccaricare l'API
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-            else
-                addPinMedico(medico);
-        }
-        updateReport();
-    }
-
-    function addPinMedico(medico) {
-        // create location from lat and lng
-        let location = new google.maps.LatLng(medico.lat, medico.lng);
-
-        // Determina la circoscrizione in base alle coordinate
-        const getCircoscrizioneByCoordinates = (lat, lng) => {
-            const point = new google.maps.LatLng(lat, lng);
-
-            for (let i = 0; i < polygons.length; i++) {
-                if (google.maps.geometry.poly.containsLocation(point, polygons[i])) {
-                    // I poligoni sono nello stesso ordine delle circoscrizioni (1-6)
-                    return (i + 1).toString();
-                }
-            }
-
-            // Se non è in nessuna circoscrizione
-            return 'ALTRO';
-        }
-
-        // Calcola la circoscrizione prima di creare l'infowindow
-        const circ = getCircoscrizioneByCoordinates(medico.lat, medico.lng);
-
-        const marker = new google.maps.Marker({
-            map: map,
-            position: location,
-            title: `[${medico.cod_reg}] ${medico.nome_cognome} [${circ}]`
-        });
-
-        // Aggiungi info window con la circoscrizione corretta
-        const infowindow = new google.maps.InfoWindow({
-            content: `<div style="padding: 10px;">
-                    <strong>[${medico.cod_reg}] ${medico.nome_cognome}</strong><br>
-                    ${medico.indirizzo}<br>
-                    Circoscrizione: ${circ}
-                    ${medico.ambito ? '<br>Ambito: ' + medico.ambito : ''}
-                    <br>Tipo: ${medico.tipo || 'N/D'}
-                </div>`
-        });
-
-        // Apri infowindow al passaggio del mouse
-        marker.addListener('mouseover', () => {
-            infowindow.open(map, marker);
-        });
-
-        // Chiudi infowindow quando il mouse esce
-        marker.addListener('mouseout', () => {
-            infowindow.close();
-        });
-
-        markers.push(marker);
-
-        // Aggiorna il conteggio per circoscrizione
-        if (!mediciPerCircoscrizione[circ]) {
-            mediciPerCircoscrizione[circ] = [];
-        }
-        mediciPerCircoscrizione[circ].push(medico);
-    }
-
-    // Funzione per geocodificare un singolo indirizzo
-    function geocodeAddress(medico) {
-        return new Promise((resolve) => {
-            geocoder.geocode({address: medico.indirizzo}, (results, status) => {
-                if (status === 'OK') {
-                    // post location to action to save in db
-                    $.post('<?= Yii::$app->urlManager->createUrl(['mmg-pls/save-location']) ?>', {
-                        id_rapporto: medico.id_rapporto,
-                        cod_reg: medico.cod_reg,
-                        lat: results[0].geometry.location.lat(),
-                        lng: results[0].geometry.location.lng()
-                    });
-                    medico.lat = results[0].geometry.location.lat();
-                    medico.lng = results[0].geometry.location.lng();
-                    addPinMedico(medico)
-                }
-                resolve();
-            });
-        });
     }
 
     // Funzione per aggiornare il report
@@ -403,8 +456,8 @@ $this->title = 'Mappa Circoscrizioni e Medici';
                             <p>Totale medici: ${mediciPerCircoscrizione[circ].length}</p>
                             <ul>
 ${mediciPerCircoscrizione[circ].sort((a, b) => a.nome_cognome.localeCompare(b.nome_cognome)).map(medico =>
-    `<li>[${medico.cod_reg}] ${medico.nome_cognome} - ${medico.tipo || 'N/D'}</li>`
-).join('')}
+                    `<li>[${medico.cod_reg}] ${medico.nome_cognome} - ${medico.tipo || 'N/D'}</li>`
+                ).join('')}
                             </ul>
                         </div>
                     </div>
@@ -415,6 +468,9 @@ ${mediciPerCircoscrizione[circ].sort((a, b) => a.nome_cognome.localeCompare(b.no
         html += '</div>';
         reportDiv.innerHTML = html;
     }
+
+    // Inizializza la mappa al caricamento della pagina
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeMap();
+    });
 </script>
-
-
