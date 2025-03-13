@@ -9,6 +9,8 @@ use app\models\Rapporti;
 use app\models\RapportiCaratteristiche;
 use app\models\RapportiSearch;
 use app\models\RapportiTipologia;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
 use Yii;
 use yii\helpers\Json;
 use yii\web\Controller;
@@ -189,13 +191,36 @@ class MmgPlsController extends Controller
             }
             $mediciJson = Json::encode($mediciJson, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         }
+
+
+/*        // GeoJSON data for Messina's districts
+        $capFile = Yii::getAlias('@app/config/data/cap_data.json');
+        $capData = null;
+        // Check if file exists
+        if (file_exists($capFile)) {
+            // Read the GeoJSON file
+            $capData = file_get_contents($capFile);
+
+            // Validate JSON format
+            $capData = json_decode($capData);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // Handle JSON error
+                $geojsonString = json_encode([
+                    'type' => 'FeatureCollection',
+                    'features' => []
+                ]);
+                error_log('Error loading GeoJSON file: ' . json_last_error_msg());
+            }
+        }*/
+
+
         return $this->render('mappa', [
             'geojsonString' => $geojsonString,
             'mediciJson' => $mediciJson,
-            'colors' => $colors
+            'colors' => $colors,
+            //'capData' => Json::encode($capData)
         ]);
     }
-
 
 
     /**
@@ -269,10 +294,6 @@ class MmgPlsController extends Controller
 
         return json_decode($response, true);
     }
-
-
-
-
 
 
     /**
@@ -579,6 +600,83 @@ class MmgPlsController extends Controller
         ];
     }
 
+    public function actionBuildCapFile()
+    {
+        $capInziale = 98121;
+        $capFinale = 98168;
+        $baseQuery = "https://nominatim.openstreetmap.org/search.php?postalcode={{cap}}&format=jsonv2";
+        $client = new Client([
+            'verify' => false, // Disabilita la verifica SSL (solo per sviluppo)
+            'headers' => [
+                'User-Agent' => 'YourApp/1.0 (your@email.com)' // Richiesto da OSM
+            ]
+        ]);
+
+        $results = [];
+
+        for ($i = $capInziale; $i <= $capFinale; $i++) {
+            $query = str_replace('{{cap}}', $i, $baseQuery);
+
+            try {
+                $response = $client->request('GET', $query);
+                $data = json_decode($response->getBody(), true);
+                if (count($data) >0)
+                    $results[$i] = ["lat"=> $data[0]['lat'], "long" => $data[0]['lon']];
+
+                // Log per debug
+                Yii::info("CAP $i elaborato con successo", 'app');
+
+                // Aggiungi un ritardo per rispettare i limiti di Nominatim (1 richiesta/secondo)
+                sleep(1);
+            } catch (\Exception $e) {
+                Yii::error("Errore elaborazione CAP $i: " . $e->getMessage(), 'app');
+                // Continua con il prossimo CAP
+                continue;
+            }
+        }
+
+        // Salva i risultati in un file
+        $filePath = Yii::getAlias('@app/runtime/cap_data.json');
+        file_put_contents($filePath, json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        return $this->renderContent("<div class='alert alert-success'>File CAP creato: $filePath</div>");
+    }
+
+
+    private function CallAPI($method, $url, $data = false)
+    {
+        $curl = curl_init();
+
+        switch ($method) {
+            case "POST":
+                curl_setopt($curl, CURLOPT_POST, 1);
+
+                if ($data)
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                break;
+            case "PUT":
+                curl_setopt($curl, CURLOPT_PUT, 1);
+                break;
+            default:
+                if ($data)
+                    $url = sprintf("%s?%s", $url, http_build_query($data));
+        }
+
+        // Optional Authentication:
+        /*            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                    curl_setopt($curl, CURLOPT_USERPWD, "username:password");*/
+
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+        $result = curl_exec($curl);
+
+        curl_close($curl);
+
+        return $result;
+    }
+
+
     /**
      * Finds the Rapporti model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -586,7 +684,8 @@ class MmgPlsController extends Controller
      * @return Rapporti the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected
+    function findModel($id)
     {
         if (($model = Rapporti::findOne(['id' => $id])) !== null) {
             return $model;

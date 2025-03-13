@@ -124,7 +124,6 @@ $this->title = 'Mappa Circoscrizioni e Medici';
 
         // Converti il GeoJSON in oggetto JavaScript
         const geojsonData = <?= isset($geojsonString) ? $geojsonString : '{"type": "FeatureCollection", "features": []}' ?>;
-
         // Array di colori predefiniti se non forniti dal server
         const defaultColors = ['#FF0000', '#00FF00', '#0000FF', '#FFA500', '#800080', '#008080'];
         const colors = <?= isset($colors) ? json_encode($colors) : 'defaultColors' ?>;
@@ -196,6 +195,9 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         document.getElementById('applicaFiltri').addEventListener('click', applicaFiltri);
         document.getElementById('resetFiltri').addEventListener('click', resetFiltri);
         document.getElementById('esportaExcel').addEventListener('click', esportaExcel);
+/*        setTimeout(() => {
+            updateCapCircoscrizioniArray(capData);
+        }, 4000);*/
     }
 
     // Funzione per processare i medici in modo asincrono
@@ -221,6 +223,29 @@ $this->title = 'Mappa Circoscrizioni e Medici';
         markers = newMarkers;
         addMarkersToCluster();
         updateReport();
+
+    }
+
+    function updateCapCircoscrizioniArray(capData) {
+        for (let cap in capData) {
+            const circ = getCircoscrizioneByCoordinates(capData[cap].lat, capData[cap].long);
+            capData[cap].circoscrizione = circ;
+        }
+/*        // Crea un file JSON con i dati CAP aggiornati e scaricalo
+                const jsonString = JSON.stringify(capData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                // Crea un link per scaricare il file
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = 'cap_circoscrizioni.json';
+                downloadLink.textContent = 'Download CAP-Circoscrizioni JSON';
+                downloadLink.className = 'btn btn-info mt-2';
+
+                // Aggiungi il link accanto agli altri pulsanti di filtro
+                document.querySelector('.card-body .mt-3').appendChild(downloadLink);*/
+
     }
 
     // Funzione per creare un marker per un medico
