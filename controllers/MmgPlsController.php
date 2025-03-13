@@ -196,6 +196,85 @@ class MmgPlsController extends Controller
         ]);
     }
 
+
+
+    /**
+     * Displays map page with districts.
+     *
+     * @return string
+     */
+    public function actionMappaAssistiti()
+    {
+        // Define colors for districts
+        $colors = [
+            '#FF0000',  // Red for district 1
+            '#00FF00',  // Green for district 2
+            '#0000FF',  // Blue for district 3
+            '#FFA500',  // Orange for district 4
+            '#800080',  // Purple for district 5
+            '#008080'   // Teal for district 6
+        ];
+
+        // GeoJSON data for Messina's districts
+        $geojsonFilePath = Yii::getAlias('@app/config/data/Circoscrizioni 2021.geojson');
+
+        // Check if file exists
+        if (file_exists($geojsonFilePath)) {
+            // Read the GeoJSON file
+            $geojsonString = file_get_contents($geojsonFilePath);
+
+            // Validate JSON format
+            $geojsonData = json_decode($geojsonString);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // Handle JSON error
+                $geojsonString = json_encode([
+                    'type' => 'FeatureCollection',
+                    'features' => []
+                ]);
+                error_log('Error loading GeoJSON file: ' . json_last_error_msg());
+            }
+        } else {
+            // Fallback to empty GeoJSON if file doesn't exist
+            $geojsonString = json_encode([
+                'type' => 'FeatureCollection',
+                'features' => []
+            ]);
+            error_log('GeoJSON file not found: ' . $geojsonFilePath);
+        }
+        return $this->render('mappa-assistiti', [
+            'apiToken' => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvYmVydG8uZGVkb21lbmljbyIsInNjb3BpIjpbImFzcDUtYW5hZ3JhZmljYSJdLCJhbWJpdG8iOiJhcGkiLCJsaXZlbGxvIjo5OSwiaWF0IjoxNzQxNzc0NDAzLCJleHAiOjE3NDE4NjA4MDN9.my97zSrwtOOIgJKxyPISskY-0Q8_uJTNqJ1PplT6tcM",
+            'geojsonString' => $geojsonString,
+            'colors' => $colors
+        ]);
+    }
+
+    // In un controller API
+    public function actionProxyGeoData()
+    {
+        $url = 'https://anagrafica.asp.robertodedomenico.it/api/v1/anagrafica/get-geo-data?codComuneResidenza=F158&onlyGeolocationPrecise=false';
+        $ch = curl_init($url);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: application/json',
+            'Authorization: Bearer ' . $_ENV["ASP_WS_TOKEN"]
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->statusCode = $httpCode;
+
+        return json_decode($response, true);
+    }
+
+
+
+
+
+
     /**
      * Esporta i dati dei medici filtrati in formato Excel.
      * @return \yii\web\Response
