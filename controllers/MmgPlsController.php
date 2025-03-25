@@ -274,25 +274,36 @@ class MmgPlsController extends Controller
     }
 
     // In un controller API
-    public function actionProxyGeoData()
+    public function actionProxyGeoData($codComuneResidenza)
     {
-        $url = 'https://anagrafica.asp.robertodedomenico.it/api/v1/anagrafica/get-geo-data?codComuneResidenza=F158&onlyGeolocationPrecise=false';
-        $ch = curl_init($url);
+        // no execution time
+        set_time_limit(0);
+        // no memory limit
+        ini_set('memory_limit', '-1');
+        try {
+            $url = 'https://anagrafica.asp.robertodedomenico.it/api/v1/anagrafica/get-geo-data?codComuneResidenza=F158';
+            $ch = curl_init($url);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Accept: application/json',
-            'Authorization: Bearer ' . $_ENV["ASP_WS_TOKEN"]
-        ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Accept: application/json',
+                'Authorization: Bearer ' . $_ENV["ASP_WS_TOKEN"]
+            ]);
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        Yii::$app->response->statusCode = $httpCode;
+            Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+            Yii::$app->response->statusCode = $httpCode;
 
-        return json_decode($response, true);
+            return $response;
+        }
+        catch (\Exception $e) {
+            Yii::error('Errore durante la richiesta API: ' . $e->getMessage());
+            Yii::$app->response->statusCode = 500;
+            return ['error' => 'Errore durante la richiesta API'];
+        }
     }
 
 

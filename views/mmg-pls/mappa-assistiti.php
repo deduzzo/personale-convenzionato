@@ -358,7 +358,7 @@ $this->registerCss($css);
         document.getElementById('loader-message').textContent = 'Caricamento dati dal server...';
 
         try {
-            const response = await fetch('<?= Yii::$app->urlManager->createUrl(['mmg-pls/proxy-geo-data']) ?>', {
+            const response = await fetch('<?= Yii::$app->urlManager->createUrl(['mmg-pls/proxy-geo-data', 'codComuneResidenza' => 'F158']) ?>', {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json'
@@ -369,7 +369,9 @@ $this->registerCss($css);
                 throw new Error(`Errore nella risposta API: ${response.status}`);
             }
 
-            const result = await response.json();
+            console.log("ciao");
+           const responseText = await response.text();
+           const result = responseText ? JSON.parse(responseText) : {};
             console.log("Dati caricati:", result.data.length);
 
             document.getElementById('data-loader').style.display = 'none';
